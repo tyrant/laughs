@@ -1,0 +1,15 @@
+$(function() {
+
+  // Fire up the map.
+  window.map = new google.maps.Map(document.getElementById('map'), {
+    center: new google.maps.LatLng(54, -5),
+    zoom:   5
+  });
+
+  // Fire up select2 and datepickers.
+  $('#comedians').select2();
+  $('#start_date').datetimepicker({ format: 'DD/MM/YYYY mm:hh a' });
+  $('#end_date').datetimepicker({ format: 'DD/MM/YYYY mm:hh a' });
+
+  $('#filter').submit();
+});

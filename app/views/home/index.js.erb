@@ -1,0 +1,16 @@
+// Wipe existing markers and replace them with a new lot.
+
+_(window.markers).each(function(marker) {
+  marker.setMap(null);
+});
+
+var venuesJson = <%= raw @venues.to_json %>;
+
+window.markers = _(venuesJson).map(function(venueJson) {
+  var marker = new google.maps.Marker({
+    position: new google.maps.LatLng(venueJson.latitude, venueJson.longitude),
+    title:    venueJson.name + ', ' + venueJson.readable_address
+  });
+  marker.setMap(window.map);
+  return marker;
+});

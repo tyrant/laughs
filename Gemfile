@@ -11,6 +11,7 @@ gem 'pg'
 gem 'puma', '~> 3.0'
 
 # Use SCSS for stylesheets
+gem 'bootstrap-sass', '~> 3.3.6'
 gem 'sass-rails', '~> 5.0'
 
 # Use Uglifier as compressor for JavaScript assets
@@ -58,5 +59,8 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'nokogiri'
-gem 'bourbon'
 gem 'awesome_print'
+gem 'google_places'
+gem 'underscore-rails'
+gem 'momentjs-rails', '>= 2.9.0'
+gem 'bootstrap3-datetimepicker-rails', '~> 4.14.30'
