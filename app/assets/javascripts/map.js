@@ -8,8 +8,14 @@ $(function() {
 
   // Fire up select2 and datepickers.
   $('#comedians').select2();
-  $('#start_date').datetimepicker({ format: 'DD/MM/YYYY mm:hh a' });
-  $('#end_date').datetimepicker({ format: 'DD/MM/YYYY mm:hh a' });
+  $('#start_date').datetimepicker({
+    format:  'DD/MM/YYYY mm:hh a',
+    default: moment() // Start date: right now.
+  });
+  $('#end_date').datetimepicker({ 
+    format:  'DD/MM/YYYY mm:hh a',
+    default: moment().add(1, 'year') // End date: a year from now.
+  });
 
   $('#filter').submit();
 });
