@@ -3,28 +3,42 @@ class Venue < ApplicationRecord
   # AR association shenanigans. Check out http://guides.rubyonrails.org/association_basics.html#the-types-of-associations.
   has_many :gigs
 
-  # Google Places gem shenanigans. Check out https://github.com/qpowell/google_places#retrieving-spots-based-on-query
-  after_validation :do_place_fiddly_stuff
 
   scope :locatable, -> { where('latitude is not null and longitude is not null') }
   scope :terra_incognita, -> { where('latitude is null and longitude is null') }
 
-  # Whenever we save a venue, get its latest from the Google Places API,
-  # specifically its latitude and longitude, and get 
-  def do_place_fiddly_stuff
-    client = GooglePlaces::Client.new(GooglePlaces::API_KEY)
-    place = client.spots_by_query(self.readable_address).first
 
-    # Once in a blue moon, not even the mighty Google Places API can extract an actual location
-    # from the shit these web monkeys have as place names.
-    if place
-      self.latitude = place.lat
-      self.longitude = place.lng
-      self.readable_address = place.formatted_address
+  def Venue.filter(params)
+    venues = locatable.joins(gigs: :comedians).includes(gigs: :comedians)
+    venues = venues.where('comedians.id in (?)', params[:comedians]) unless params[:comedians].blank?
+    venues = venues.where('gigs.time > ?', DateTime.parse(params[:start_date])) unless params[:start_date].blank?
+    venues = venues.where('gigs.time < ?', DateTime.parse(params[:end_date])) unless params[:end_date].blank?
+    venues
+  end
+
+
+  # Often we hit up against the Places API's rate limit. This goes over 
+  # the venues not yet placefied, and does so.
+  def Venue.placeify 
+    Venue.terra_incognita.each do |venue|
+      begin
+        place = GP.first_plausible_spot(venue.deets)
+
+        if place.present?
+          venue.latitude = place.lat
+          venue.longitude = place.lng
+          venue.readable_address = place.formatted_address
+          venue.google_place_id = place.place_id
+          venue.name = place.name
+          venue.save
+        end
+      rescue Exception => e
+        ap e.message
+      end
     end
   end
 
-  # Future params: latitude/longitude bounds; gig time bounds.
+
   def as_json(params={})
     {
       name:             self.name,

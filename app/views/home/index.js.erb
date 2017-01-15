@@ -1,4 +1,8 @@
-// Wipe existing markers and replace them with a new lot.
+// Update our marker set. We want to add new markers that don't exist on the map yet,
+// delete the ones that currently exist there but aren't in our new marker set,
+// and do zilch to the markers both on the map and in our new set.
+
+// Actually hold on that, it's unnecessarily fiddly, given we'll be replacing this later.
 
 _(window.markers).each(function(marker) {
   marker.setMap(null);
@@ -6,11 +10,12 @@ _(window.markers).each(function(marker) {
 
 var venuesJson = <%= raw @venues.to_json %>;
 
+// Create our incoming markers.
 window.markers = _(venuesJson).map(function(venueJson) {
-  var marker = new google.maps.Marker({
+  return new google.maps.Marker({
     position: new google.maps.LatLng(venueJson.latitude, venueJson.longitude),
-    title:    venueJson.name + ', ' + venueJson.readable_address
+    title:    venueJson.name + ', ' + venueJson.readable_address,
+    map:      window.map
   });
-  marker.setMap(window.map);
-  return marker;
 });
+
