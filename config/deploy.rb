@@ -38,6 +38,10 @@ set :deploy_via, 'remote-copy'
 # http://stackoverflow.com/questions/34126546
 set :rbenv_path, '/home/app-user/.rbenv'
 
+# If you are using rbenv add these lines:
+set :rbenv_type, :user # or :system, depends on your rbenv setup
+set :rbenv_ruby, '2.2.2'
+
 namespace :deploy do
 
   desc "Restart application"
