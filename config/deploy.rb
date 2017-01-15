@@ -56,7 +56,7 @@ namespace :deploy do
     on roles(:app), in: :sequence, wait: 5 do
       # Capistrano already makes a symlink to database.yml in the /shared/config directory; Rails
       # requires secrets.yml too.
-      execute 'ln ~/shipping/shared/config/secrets.yml ~/shipping/current/config/secrets.yml'
+      execute 'ln ~/laughs/shared/config/secrets.yml ~/laughs/current/config/secrets.yml'
     end
   end
 
