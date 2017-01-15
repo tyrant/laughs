@@ -19,3 +19,9 @@
 
 # Ignore Byebug command history file.
 .byebug_history
+
+# Ignore database.yml and secrets.yml. These are to manually copied to Production.
+/config/database.yml
+/config/secrets.yml
+
+/public/system/**
