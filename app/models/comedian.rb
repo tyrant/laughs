@@ -23,21 +23,21 @@ class Comedian < ApplicationRecord
     # Grab each individual gig on Jimmy Carr's gig page, and iterate over it.
     # Note the 'map'. This iterates over each of Jimmy Carr's gigs, and collects
     # them into an array of hashes of useful bits of stuff.
-    gigs = dom.css('.accordion-group').map do |html_gig|
+    gigs = dom.css('.accordion').map do |html_gig|
 
       # Grab our candidate-gig's date value, and its venue name:
 
       # The date string, in dd/mm/yyyy format.
-      gig_date_s = html_gig.at_css('.gig-date').text 
+      gig_date_s = html_gig.at_css('.date').text 
 
       # Grab the venue's name/city string, then plug that into the Google Places API later,
       # to get things like its Place ID, Google's unique identifier for every location
       # on Earth. Useful!
-      venue_deets = html_gig.at_css('.gig-city-venue').text.strip
+      venue_deets = html_gig.at_css('.city-venue').text.strip
 
       # Grab the booking and/or Ticketmaster URLs.
       # What's this Xpath syntax? Check out http://stackoverflow.com/questions/3655549.
-      ticket_html = html_gig.at_css('.gig-purchase-tickets')
+      ticket_html = html_gig.at_css('.buttons-section')
       venue_url = ticket_html.at_xpath('//*[text()[contains(., "VENUE")]]')['href']
       ticketmaster_url = ticket_html.at_xpath('//*[text()[contains(., "TICKETMASTER")]]')['href']
 

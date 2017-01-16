@@ -51,17 +51,7 @@ namespace :deploy do
     end
   end
 
-  desc "Make a secrets.yml symlink"
-  task :copy_secrets do
-    on roles(:app), in: :sequence, wait: 5 do
-      # Capistrano already makes a symlink to database.yml in the /shared/config directory; Rails
-      # requires secrets.yml too.
-      execute 'ln ~/laughs/shared/config/secrets.yml ~/laughs/current/config/secrets.yml'
-    end
-  end
-
   after :publishing, 'deploy:restart'
-  #after :publishing, 'deploy:copy_secrets'
   after :finishing, 'deploy:cleanup'
 
   after :restart, :clear_cache do
