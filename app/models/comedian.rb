@@ -17,7 +17,8 @@ class Comedian < ApplicationRecord
 
     # Use open() to get the HTML text for Jimmy Carr's Upcoming Gigs page,
     # then use Nokogiri to construct its DOM for our parsing pleasure.
-    html_text = open('http://www.jimmycarr.com/live/')
+
+    html_text = open('http://www.jimmycarr.com/live/?show=2017-uk-tour-dates')
     dom = Nokogiri::HTML(html_text)
 
     # Grab each individual gig on Jimmy Carr's gig page, and iterate over it.
@@ -78,11 +79,12 @@ class Comedian < ApplicationRecord
     dom = Nokogiri::HTML(open('http://www.daraobriain.com/dates/'))
 
     # The first two rows of Dara's Upcoming Gigs table are headers/titles. Skip.
-    gigs = dom.css('table[width="420"] tr:nth-child(n+3)').map do |html_gig|
+    # Likewise, each row with actual gig data alternates with some kind of spacer row.
+    gigs = dom.css('table[width="420"] tr:nth-child(2n+3)').map do |html_gig|
 
       gig_date_s = html_gig.at_css('td:nth-child(1)').text.strip
       booking_td = html_gig.at_css('td:nth-child(5)')
-      venue_booking_url = if booking_td.at_css('a').length
+      venue_booking_url = if booking_td.at_css('a')
         booking_td.at_css('a')['href']
       else
         ''
@@ -94,6 +96,9 @@ class Comedian < ApplicationRecord
         venue_deets:       html_gig.at_css('td:nth-child(3)').text.strip
       }
     end
+    
+    # Trim off any we still couldn't get dates from.
+    gigs.select!{ |g| g[:date].present? }
 
     Comedian.find_by_name("Dara O'Briain").create_gigs(gigs)
   end
