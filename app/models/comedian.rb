@@ -55,6 +55,7 @@ class Comedian < ApplicationRecord
   end
 
 
+  # Working as of 2017-01-17
   def Comedian.scrape_eddie_izzard
 
     dom = Nokogiri::HTML(open('http://www.eddieizzard.com/shows'))
@@ -74,6 +75,7 @@ class Comedian < ApplicationRecord
   end
 
 
+  # Working as of 2017-01-17
   def Comedian.scrape_dara_o_briain
 
     dom = Nokogiri::HTML(open('http://www.daraobriain.com/dates/'))
@@ -104,6 +106,7 @@ class Comedian < ApplicationRecord
   end
 
 
+  # Working as of 2017-01-17
   def Comedian.scrape_ed_byrne
 
     dom = Nokogiri::HTML(open('http://edbyrne.com/live-dates/'))
@@ -130,6 +133,7 @@ class Comedian < ApplicationRecord
 
     Comedian.find_by_name('Ed Byrne').create_gigs(gigs)
   end
+
 
 
   def Comedian.scrape_micky_flanagan

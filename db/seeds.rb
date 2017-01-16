@@ -11,7 +11,8 @@ comedians = [
   { name: 'Ed Byrne' },
   { name: "Dara O'Briain" },
   { name: 'Micky Flanagan' },
-  { name: 'Eddie Izzard' }
+  { name: 'Eddie Izzard' },
+  { name: 'Bill Burr' }
 ]
 
 comedians.each do |comedian|
