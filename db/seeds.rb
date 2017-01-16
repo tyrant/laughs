@@ -5,3 +5,15 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+comedians = [
+  { name: 'Jimmy Carr' },
+  { name: 'Ed Byrne' },
+  { name: "Dara O'Briain" },
+  { name: 'Micky Flanagan' },
+  { name: 'Eddie Izzard' }
+]
+
+comedians.each do |comedian|
+  Comedian.where(name: comedian[:name]).first_or_create
+end
