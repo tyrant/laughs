@@ -1,24 +1,5 @@
-# README
+# Laughs
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+So this little baby runs a web script for the websites of various comedians - Jimmy Carr, Eddie Izzard, etc., looks over their Upcoming Gigs pages, and displays them on a Google map. The user can then filter by comedian, location, start/end dates. 
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+You can see it in action at sciencethisbitchup.com.
