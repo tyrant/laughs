@@ -44,8 +44,7 @@ class Venue < ApplicationRecord
       name:             self.name,
       latitude:         self.latitude,
       longitude:        self.longitude,
-      readable_address: self.readable_address,
-      gigs:             self.gigs(params[:gig])
+      readable_address: self.readable_address
     }
   end
 end

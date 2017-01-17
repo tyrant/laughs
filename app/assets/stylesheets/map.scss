@@ -1,4 +1,41 @@
-#map {
+body {
   width: 100%;
-  height: 500px;
+  height: 100%;
+  position: absolute;
+
+}
+
+#banner {
+  height: 40px;
+  width: 100%;
+  background-color: #444;
+  color: white;
+  text-align: center;
+
+  #blurb {
+    line-height: 40px;
+  }
+}
+
+#everything_else {
+  height: 100%;
+
+  #map {
+    width: 100%;
+    height: calc(100% - 40px); 
+    position: absolute;
+  }
+
+  #overlay {
+    position: absolute;
+    width: 280px;
+    top: 40px;
+    right: 0px;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding-top: 10px;
+
+    label {
+      color: white;
+    }
+  }
 }
