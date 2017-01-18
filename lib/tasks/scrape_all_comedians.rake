@@ -3,7 +3,7 @@ desc "Iterate over every comedian, call their scrape_(name) method, grab its gig
 task scrape_all_comedians: :environment do 
 
   Comedian.find_each do |comedian|
-    gigs = Comedian.send("scrape_#{comedian.parameterize.underscore}")
+    gigs = Comedian.send("scrape_#{comedian.name.parameterize.underscore}")
     comedian.create_gigs(gigs)
   end
 
