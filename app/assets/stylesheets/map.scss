@@ -44,13 +44,22 @@ body {
     background-color: rgba(0, 0, 0, 0.4);
     padding-top: 10px;
 
-
     label {
       color: white;
     }
 
+    input {
+      height: 28px;
+      font-size: 9pt;
+    }
+
+    span.input-group-addon {
+      padding: 4px 5px;
+      font-size: 9pt;
+    }
+
     @media (min-width: 400px) {
-      width: 320px;
+      width: 330px;
       border-radius: 0 0 0 20px;
     }
 

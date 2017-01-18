@@ -2,6 +2,7 @@ var app = {};
 
 app.map = function() {
 
+
   // Fire up the map.
   var defaultLat = $.query.get('lat') || 49;
   var defaultLng = $.query.get('lng') || 3;
@@ -11,12 +12,16 @@ app.map = function() {
     zoom:   defaultZoom
   });
 
+
   // Whenever we drag or zoom the map, call mapChanged() to update the querystring with the new data.
   window.map.addListener('dragend', app.mapChanged);
   window.map.addListener('zoom_changed', app.mapChanged);
 
+
   // Fire up select2 and datepickers.
-  $('#comedians').select2();
+  $('#comedians').select2({
+    placeholder: 'Find gigs performed by ...'
+  });
   $('#start_date').datetimepicker({
     format:      'DD/MM/YYYY',
     defaultDate: moment() // Start date: right now.
@@ -26,8 +31,14 @@ app.map = function() {
     defaultDate: moment().add(1, 'year') // End date: a year from now.
   });
 
+
+  // Altering any form input triggers a submit.
+  $('#start_date, #end_date').on('dp.change', function() { $('#filter').submit(); });
+  $('#comedians').on('change', function() { $('#filter').submit(); });
+
   // Fire off our form to get the first dataset.  
   $('#filter').submit();
+
 
   // Handle toggling the overlay.
   $('#toggle_overlay').on('click', function() { 

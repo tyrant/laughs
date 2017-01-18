@@ -22,9 +22,9 @@ $(document).ready(function() {
 
   <div id="overlay" class="container">
     <form id="filter" method="get" data-remote="true">
+
       <div class="form-group">
-        <label>Find gigs performed by</label>
-        <select name="comedians[]" id="comedians" class="form-control" multiple="multiple">
+        <select name="comedians[]" id="comedians" class="form-control" multiple="multiple" style="width: 100%;">
           <% Comedian.all.each do |comedian| %>
             <option selected="selected" value="<%= comedian.id %>">
               <img src="http://d39kbiy71leyho.cloudfront.net/wp-content/uploads/2016/05/09170020/cats-politics-TN.jpg" height="40" width="40">
@@ -33,32 +33,33 @@ $(document).ready(function() {
           <% end %>
         </select>
       </div>
+
       <div class="row">
         <div class="col-xs-6 start-container">
           <div class="form-group">
-            <label>Start</label>
             <div class="input-group date" id="start_date">
               <span class="input-group-addon">
                 <span class="glyphicon glyphicon-calendar"></span>
+                From
               </span>
               <input type="text" name="start_date" class="form-control" />
             </div>
           </div>
         </div>
+
         <div class="col-xs-6 end-container">
           <div class="form-group">
-            <label>End</label>
             <div class="input-group date" id="end_date">
-              <input type="text" name="end_date" class="form-control" />
               <span class="input-group-addon">
                 <span class="glyphicon glyphicon-calendar"></span>
+                Until
               </span>
+              <input type="text" name="end_date" class="form-control" />
             </div>
           </div>
         </div>
       </div>
-      <div class="form-group">
-        <input type="submit" class="btn btn-danger" value="Find gigs" />
+      
     </form>
   </div>
 
