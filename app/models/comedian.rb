@@ -6,6 +6,16 @@ class Comedian < ApplicationRecord
   has_many :venues, through: :gigs
 
 
+  # Every comedian has their own website, with its own structure and quirks, so
+  # we need to have a separate method for each one.
+  # Quick note on the structure of each scraping method. You can process the lot
+  # by doing something like, as per our Rake task:
+  # Comedian.find_each do |comedian| 
+  #   gigs = Comedian.send("scrape_#{c.parameterize.underscore}")
+  #   comedian.create_gigs(gigs)
+  # end
+
+
   # Hit up jimmycarr.co.uk/live and iterate over each of the upcoming gigs listed there.
   # For each gig, we grab its name and see if we've already got it listed in our own database.
   # If that gig doesn't exist, we grab the following bits of info: 
@@ -24,7 +34,7 @@ class Comedian < ApplicationRecord
     # Grab each individual gig on Jimmy Carr's gig page, and iterate over it.
     # Note the 'map'. This iterates over each of Jimmy Carr's gigs, and collects
     # them into an array of hashes of useful bits of stuff.
-    gigs = dom.css('.accordion').map do |html_gig|
+    dom.css('.accordion').map do |html_gig|
 
       # Grab our candidate-gig's date value, and its venue name:
 
@@ -50,8 +60,9 @@ class Comedian < ApplicationRecord
       }
     end
 
-    # And we're done with our web scraping! Now we feed our gigs info into create_gigs.
-    Comedian.find_by_name('Jimmy Carr').create_gigs(gigs)
+    # And we're done with our web scraping! Ruby functions automatically return whatever
+    # variable was defined or mentioned last, so dom.css('.accordion').map, above, will
+    # return our scraped array of website gig/venue details to whatever function called this.
   end
 
 
@@ -59,7 +70,7 @@ class Comedian < ApplicationRecord
   def Comedian.scrape_eddie_izzard
 
     dom = Nokogiri::HTML(open('http://www.eddieizzard.com/shows'))
-    gigs = dom.css('.gig').map do |html_gig|
+    dom.css('.gig').map do |html_gig|
 
       gig_date_s = html_gig.at_css('.details h5').text.split('-')[1].strip
       gig_time_s = html_gig.at_css('.summary .note').text.strip
@@ -70,8 +81,6 @@ class Comedian < ApplicationRecord
         venue_deets:       html_gig.at_css('.details dd').text.strip
       }
     end
-
-    Comedian.find_by_name('Eddie Izzard').create_gigs(gigs)
   end
 
 
@@ -102,7 +111,7 @@ class Comedian < ApplicationRecord
     # Trim off any we still couldn't get dates from.
     gigs.select!{ |g| g[:date].present? }
 
-    Comedian.find_by_name("Dara O'Briain").create_gigs(gigs)
+    gigs
   end
 
 
@@ -111,7 +120,7 @@ class Comedian < ApplicationRecord
 
     dom = Nokogiri::HTML(open('http://edbyrne.com/live-dates/'))
 
-    gigs = dom.css('.each-date').map do |html_gig|
+    dom.css('.each-date').map do |html_gig|
 
       gig_date_s = html_gig.at_css('.date-when').text.strip
       location = html_gig.at_css('.date-location').text.strip
@@ -128,10 +137,7 @@ class Comedian < ApplicationRecord
         phone:                    phone,
         ticketmaster_booking_url: html_gig.at_css('.date-buy')['href'] 
       }
-
     end
-
-    Comedian.find_by_name('Ed Byrne').create_gigs(gigs)
   end
 
 
@@ -140,19 +146,16 @@ class Comedian < ApplicationRecord
 
     dom = Nokogiri::HTML(open('http://www.livenation.co.uk/artist/micky-flanagan-tickets'))
 
-    gigs = dom.css('.artistticket').map do |html_gig|
-      gig_date_s = html_gig.at_css('.artistticket__date').text.strip
+    dom.css('.artistticket').map do |html_gig|
       venue = html_gig.at_css('.artistticket__venue').text.strip
       city = html_gig.at_css('.artistticket__city').text.strip
 
       {
-        date:              gig_date_s,
+        date:              html_gig.at_css('.artistticket__date').text.strip,
         venue_deets:       "#{venue} #{city}",
         venue_booking_url: html_gig.at_css('.artistticket__link')['href']
       }
     end
-
-    Comedian.find_by_name('Micky Flanagan').create_gigs(gigs)
   end
 
 
@@ -160,9 +163,35 @@ class Comedian < ApplicationRecord
 
     dom = Nokogiri::HTML(open('http://billburr.com/events/'))
 
-    gigs = dom
+    dom.css('.post').map do |html_gig|
+
+      venue = html_gig.at_css('h2').text.strip
+      city = html_gig.at_css('.info').text.strip
+
+      {
+        date:              html_gig.at_css('.date').text.strip,
+        venue_deets:       "#{venue} #{city}",
+        venue_booking_url: html_gig.at_css('a.button')['href']
+      }
+    end
+  end
 
 
+  def Comedian.scrape_jim_jefferies
+
+    dom = Nokogiri::HTML(open('http://jimjefferies.com/events'))
+
+    dom.css('.list-item').map do |html_gig|
+
+      venue = html_gig.at_css('.event-info-location').text.strip
+      city = html_gig.at_css('.event-info-title').text.strip
+
+      {
+        date:              html_gig.at_css('.event-date').text.strip,
+        venue_deets:       "#{venue} #{city}",
+        venue_booking_url: html_gig.at_css('.btn-t-buy')['href']
+      }
+    end     
   end
 
 

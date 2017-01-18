@@ -36,6 +36,14 @@ app.map = function() {
   $('#start_date, #end_date').on('dp.change', function() { $('#filter').submit(); });
   $('#comedians').on('change', function() { $('#filter').submit(); });
 
+
+  // Whenever we or the user submits the filter-form, append its data to the existing lot.
+  $('#filter').on('submit', function() {
+    var data = $(this).serialize();
+
+  });
+
+
   // Fire off our form to get the first dataset.  
   $('#filter').submit();
 
@@ -46,9 +54,16 @@ app.map = function() {
   });
 }
 
+
 // Whenever the dragend or zoom_changed map events fire, call this.
 app.mapChanged = function() {
   var c = window.map.getCenter();
   var z = window.map.getZoom();
-  window.history.pushState([c.lat(), c.lng(), z], 'Moved the map', '/?lat=' + c.lat() + '&lng=' + c.lng() + '&zoom=' + z);
+  window.history.pushState([c.lat(), c.lng(), z], 'Changed the map', '/?lat=' + c.lat() + '&lng=' + c.lng() + '&zoom=' + z);
 };
+
+// The shit in the URL is really piling up!
+// Current suspects: lat, lng, zoom, comedians[], start_date, end_date.
+app.getVarsChanged = function() {
+
+}
