@@ -39,15 +39,31 @@ body {
 
   #overlay {
     position: absolute;
-    width: 280px;
     top: 40px;
     right: 0px;
     background-color: rgba(0, 0, 0, 0.4);
     padding-top: 10px;
-    border-radius: 0 0 0 20px;
+
 
     label {
       color: white;
+    }
+
+    @media (min-width: 400px) {
+      width: 320px;
+      border-radius: 0 0 0 20px;
+    }
+
+    @media (max-width: 400px) {
+      width: 100%;
+    }
+
+    .start-container {
+      padding-right: 5px;
+    }
+
+    .end-container {
+      padding-left: 5px;
     }
   }
 }

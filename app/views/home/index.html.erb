@@ -12,6 +12,7 @@ $(document).ready(function() {
     Click on a marker to show its gigs.
   </span>
   <a id="toggle_overlay" class="btn btn-default">
+    Menu
     <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
   </a>
 </div>
@@ -33,26 +34,28 @@ $(document).ready(function() {
           <% end %>
         </select>
       </div>
-      <div class="form-group">
-        <div class="input-group date" id="start_date">
-          <span class="input-group-addon">
-            Between
-          </span>
-          <input type="text" name="start_date" class="form-control" />
-          <span class="input-group-addon">
-            <span class="glyphicon glyphicon-calendar"></span>
-          </span>
+      <div class="row">
+        <div class="col-xs-6 start-container">
+          <div class="form-group">
+            <label>Start</label>
+            <div class="input-group date" id="start_date">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+              <input type="text" name="start_date" class="form-control" />
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="form-group">
-        <div class="input-group date" id="end_date">
-          <span class="input-group-addon">
-            And
-          </span>
-          <input type="text" name="end_date" class="form-control" />
-          <span class="input-group-addon">
-            <span class="glyphicon glyphicon-calendar"></span>
-          </span>
+        <div class="col-xs-6 end-container">
+          <div class="form-group">
+            <label>End</label>
+            <div class="input-group date" id="end_date">
+              <input type="text" name="end_date" class="form-control" />
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="form-group">

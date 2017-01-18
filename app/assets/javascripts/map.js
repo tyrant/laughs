@@ -30,7 +30,9 @@ app.map = function() {
   $('#filter').submit();
 
   // Handle toggling the overlay.
-  $('#toggle_overlay').on('click', function() { $('#overlay').toggle(); });
+  $('#toggle_overlay').on('click', function() { 
+    $('#overlay').toggle(); 
+  });
 }
 
 // Whenever the dragend or zoom_changed map events fire, call this.
