@@ -12,10 +12,21 @@ var venuesJson = <%= raw @venues.to_json %>;
 
 // Create our incoming markers.
 window.markers = _(venuesJson).map(function(venueJson) {
-  return new google.maps.Marker({
+
+  var marker = new google.maps.Marker({
     position: new google.maps.LatLng(venueJson.latitude, venueJson.longitude),
     title:    venueJson.name + ', ' + venueJson.readable_address,
     map:      window.map
   });
+
+  // Whenever the user clicks on a marker, we transport them to 
+  // /venues/:id-:name/?lat=:lat&lng=:lng&zoom=:z&[form-vars].
+  google.maps.event.addListener(marker, 'click', function() {
+    window.location.href = '/venues/' + marker.venueJson.to_param + '?lat=' + $.query.get('lat') + '&lng=' + $.query.get('lng') + '&zoom=' + $.query.get('zoom') + '&' + $('#filter').serialize();
+  });
+
+  marker.venueJson = venueJson;
+
+  return marker;
 });
 

@@ -5,6 +5,8 @@ body {
 
 }
 
+// Home page.
+
 #banner {
   height: 40px;
   width: 100%;
@@ -14,6 +16,15 @@ body {
 
   #blurb {
     line-height: 40px;
+  }
+
+  #toggle_overlay {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    color: black;
+    font-size: 12pt;
+    padding: 2px 5px;
   }
 }
 
@@ -33,9 +44,27 @@ body {
     right: 0px;
     background-color: rgba(0, 0, 0, 0.4);
     padding-top: 10px;
+    border-radius: 0 0 0 20px;
 
     label {
       color: white;
     }
   }
 }
+
+// Show Venue page.
+#gp_photos {
+  
+  width: 100%;
+
+  .carousel-inner {
+    .item {
+      width: 100%;
+      height: 500px;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  }
+}
+

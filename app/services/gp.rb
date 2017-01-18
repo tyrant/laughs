@@ -26,7 +26,5 @@ module GP
     else
       spots.first
     end
-
   end
-
 end

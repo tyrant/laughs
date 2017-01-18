@@ -9,7 +9,7 @@ class HomeController < ApplicationController
 
 
   def permitted_params
-    params.permit({ comedians: [] }, :start_date, :end_date)
+    params.permit({ comedians: [] }, :start_date, :end_date, :lat, :lng, :zoom)
   end
 
 end

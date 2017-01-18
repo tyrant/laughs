@@ -39,9 +39,22 @@ class Venue < ApplicationRecord
   end
 
 
+  # This venue's photos, as provided by Google's Places API.
+  def gp_photos
+    @photos ||= GP.client.spot(self.google_place_id).photos
+  end
+
+
+  def to_param
+    "#{self.id}-#{self.name.parameterize}"
+  end
+
+
   def as_json(params={})
     {
+      id:               self.id,
       name:             self.name,
+      to_param:         self.to_param,
       latitude:         self.latitude,
       longitude:        self.longitude,
       readable_address: self.readable_address

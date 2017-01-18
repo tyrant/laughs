@@ -1,10 +1,19 @@
-$(function() {
+var app = {};
+
+app.map = function() {
 
   // Fire up the map.
+  var defaultLat = $.query.get('lat') || 49;
+  var defaultLng = $.query.get('lng') || 3;
+  var defaultZoom = $.query.get('zoom') || 5;
   window.map = new google.maps.Map(document.getElementById('map'), {
-    center: new google.maps.LatLng(54, -5),
-    zoom:   5
+    center: new google.maps.LatLng(defaultLat, defaultLng),
+    zoom:   defaultZoom
   });
+
+  // Whenever we drag or zoom the map, call mapChanged() to update the querystring with the new data.
+  window.map.addListener('dragend', app.mapChanged);
+  window.map.addListener('zoom_changed', app.mapChanged);
 
   // Fire up select2 and datepickers.
   $('#comedians').select2();
@@ -17,5 +26,16 @@ $(function() {
     defaultDate: moment().add(1, 'year') // End date: a year from now.
   });
 
+  // Fire off our form to get the first dataset.  
   $('#filter').submit();
-});
+
+  // Handle toggling the overlay.
+  $('#toggle_overlay').on('click', function() { $('#overlay').toggle(); });
+}
+
+// Whenever the dragend or zoom_changed map events fire, call this.
+app.mapChanged = function() {
+  var c = window.map.getCenter();
+  var z = window.map.getZoom();
+  window.history.pushState([c.lat(), c.lng(), z], 'Moved the map', '/?lat=' + c.lat() + '&lng=' + c.lng() + '&zoom=' + z);
+};

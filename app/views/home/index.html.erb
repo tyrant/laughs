@@ -1,11 +1,19 @@
 <% content_for :map_script do %>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= GP::API_KEY %>"></script>
 <% end %>
+<script>
+$(document).ready(function() {
+  app.map();
+});
+</script>
 
 <div id="banner">
   <span id="blurb">
-    Search for gigs by your favourite comics. Click on a marker to show its gigs.
+    Click on a marker to show its gigs.
   </span>
+  <a id="toggle_overlay" class="btn btn-default">
+    <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+  </a>
 </div>
 
 <div id="everything_else">
@@ -15,7 +23,7 @@
   <div id="overlay" class="container">
     <form id="filter" method="get" data-remote="true">
       <div class="form-group">
-        <label>Find gigs by</label>
+        <label>Find gigs performed by</label>
         <select name="comedians[]" id="comedians" class="form-control" multiple="multiple">
           <% Comedian.all.each do |comedian| %>
             <option selected="selected" value="<%= comedian.id %>">
