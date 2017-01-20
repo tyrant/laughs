@@ -32,7 +32,7 @@ app.map = function() {
   // Fire up select2 and datepickers.
   // Comedian list: either those listed in the querystring, or defaults to all.
   $('#comedians').select2({
-    placeholder: 'Find gigs performed by ...'
+    placeholder: 'Find comedy gigs performed by ...'
   });
 
   // Start date: either that in the querystring, or right now.
