@@ -243,7 +243,7 @@ class Comedian < ApplicationRecord
 
 
   def Comedian.scrape_sean_lock
-
+    {}
   end
 
 
