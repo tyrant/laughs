@@ -10,15 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170112081113) do
+ActiveRecord::Schema.define(version: 20170120073954) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "comedians", force: :cascade do |t|
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+    t.string   "mugshot_file_name"
+    t.string   "mugshot_content_type"
+    t.integer  "mugshot_file_size"
+    t.datetime "mugshot_updated_at"
   end
 
   create_table "comedians_gigs", id: false, force: :cascade do |t|

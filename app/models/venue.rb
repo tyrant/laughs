@@ -41,7 +41,9 @@ class Venue < ApplicationRecord
 
   # This venue's photos, as provided by Google's Places API.
   def gp_photos
-    @photos ||= GP.client.spot(self.google_place_id).photos
+    Rails.cache.fetch [Venue, self.id], expires_in: 1.week do
+      GP.client.spot(self.google_place_id).photos
+    end
   end
 
 

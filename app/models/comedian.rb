@@ -5,6 +5,8 @@ class Comedian < ApplicationRecord
   has_and_belongs_to_many :gigs
   has_many :venues, through: :gigs
 
+  has_attached_file :mugshot, styles: { thumb: "100x100#" }
+  validates_attachment_content_type :mugshot, content_type: /\Aimage\/.*\z/
 
   # Every comedian has their own website, with its own structure and quirks, so
   # we need to have a separate method for each one.
@@ -219,6 +221,29 @@ class Comedian < ApplicationRecord
         venue_booking_url: venue_booking_url
       }
     end
+  end
+
+
+  def Comedian.scrape_ross_noble
+    
+    dom = Nokogiri::HTML(open('http://www.rossnoble.co.uk/tour/'))
+
+    dom.css('.entry-content tr:nth-child(n+2)').map do |html_gig|
+
+      city = html_gig.at_css('td:nth-child(2)').text.strip
+      venue = html_gig.at_css('td:nth-child(3)').text.strip
+
+      {
+        date:              html_gig.at_css('td:nth-child(1)').text.strip,
+        venue_deets:       "#{venue} #{city}",
+        venue_booking_url: html_gig.at_css('td:nth-child(4) a')['href']
+      }
+    end
+  end
+
+
+  def Comedian.scrape_sean_lock
+
   end
 
 

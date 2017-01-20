@@ -9,7 +9,7 @@ $(document).ready(function() {
 
 <div id="banner">
   <span id="blurb">
-    Click venues to see gigs.
+    Your favourite comics' gigs, updated daily!
   </span>
   <a id="toggle_overlay" class="btn btn-default">
     <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
@@ -30,8 +30,10 @@ $(document).ready(function() {
               <% if params.has_key?(:comedians) and params[:comedians].include?(comedian.id) %>
                 selected="selected"
               <% end %>
+              data-src="<%= comedian.mugshot.url(:thumb) %>"
               >
               <%= comedian.name %>
+              
             </option>
           <% end %>
         </select>

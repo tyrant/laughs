@@ -17,6 +17,7 @@ app.map = function() {
   var lat = (uriData.lat && uriData.lat != 'undefined') ? parseFloat(uriData.lat) : 49;
   var lng = (uriData.lng && uriData.lng != 'undefined') ? parseFloat(uriData.lng) : 3;
   var zoom = (uriData.zoom && uriData.zoom != 'undefined') ? parseFloat(uriData.zoom) : 5;
+
   window.map = new google.maps.Map(document.getElementById('map'), {
     center: new google.maps.LatLng(lat, lng),
     zoom:   zoom
@@ -32,7 +33,12 @@ app.map = function() {
   // Fire up select2 and datepickers.
   // Comedian list: either those listed in the querystring, or defaults to all.
   $('#comedians').select2({
-    placeholder: 'Find comedy gigs performed by ...'
+    placeholder: 'Find comedy gigs performed by ...',
+    templateResult: function(comic) {
+      if (comic.element) {
+        return $('<span><img width="75" height="75" src="' + comic.element.attributes['data-src'].nodeValue + '">&nbsp;&nbsp;' + comic.text + '</span>');
+      }
+    }
   });
 
   // Start date: either that in the querystring, or right now.
@@ -70,7 +76,6 @@ app.map = function() {
 // If any of these change, update the URL.
 app.stateChanged = function() {
 
-  // Map data:
   var c = window.map.getCenter();
   var z = window.map.getZoom();
 
