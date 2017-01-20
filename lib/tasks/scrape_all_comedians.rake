@@ -6,5 +6,5 @@ task scrape_all_comedians: :environment do
     gigs = Comedian.send("scrape_#{comedian.name.parameterize.underscore}")
     comedian.create_gigs(gigs)
   end
-
+  Rails.cache.clear
 end

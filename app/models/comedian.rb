@@ -195,6 +195,33 @@ class Comedian < ApplicationRecord
   end
 
 
+  def Comedian.scrape_rhys_darby
+
+    dom = Nokogiri::HTML(open('http://www.rhysdarby.com/gigs/'))
+
+    dom.css('table.gigs .gig').map do |html_gig|
+
+      city = html_gig.at_css('.city').text.strip
+      venue = html_gig.at_css('.venue').text.strip
+      venue_booking_url = if html_gig.at_css('.tickets a')
+        html_gig.at_css('.tickets a')['href']
+      else 
+        ''
+      end
+
+      # Bit finicky. Rhys's gig dates are in dd/mm/yy, which unless dd>12, DateTime.parse()
+      # interprets ass yy/mm/dd. Sneak '20' into yy, making it yyyy.
+      d = html_gig.at_css('.date').text.strip.split('/')
+
+      {
+        date:              "#{d[0]}/#{d[1]}/20#{d[2]}",
+        venue_deets:       "#{venue} #{city}",
+        venue_booking_url: venue_booking_url
+      }
+    end
+  end
+
+
   # Receive a whole bunch of freshly scraped gigs. If they don't exist, create them.
   def create_gigs(gigs = {})
 

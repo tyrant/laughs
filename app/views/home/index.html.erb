@@ -8,6 +8,7 @@ $(document).ready(function() {
 </script>
 
 <div id="banner">
+  <a href="/">Laughs</a>
   <span id="blurb">
     Click venues to see gigs.
   </span>
@@ -21,13 +22,16 @@ $(document).ready(function() {
   <div id="map"></div>
 
   <div id="overlay" class="container">
-    <form id="filter" method="get" data-remote="true">
+    <form id="filter" method="get" data-remote="true" action="/venues">
 
       <div class="form-group">
         <select name="comedians[]" id="comedians" class="form-control" multiple="multiple" style="width: 100%;">
           <% Comedian.all.each do |comedian| %>
-            <option selected="selected" value="<%= comedian.id %>">
-              <img src="http://d39kbiy71leyho.cloudfront.net/wp-content/uploads/2016/05/09170020/cats-politics-TN.jpg" height="40" width="40">
+            <option value="<%= comedian.id %>"
+              <% if params.has_key?(:comedians) and params[:comedians].include?(comedian.id) %>
+                selected="selected"
+              <% end %>
+              >
               <%= comedian.name %>
             </option>
           <% end %>
