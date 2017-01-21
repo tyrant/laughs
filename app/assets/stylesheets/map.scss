@@ -29,7 +29,7 @@ body {
 }
 
 #everything_else {
-  height: 100%;
+  height: calc(100% - 40px);
 
   #map {
     width: 100%;
