@@ -297,6 +297,58 @@ class Comedian < ApplicationRecord
   end
 
 
+  def Comedian.scrape_jon_richardson
+
+    dom = Nokogiri::HTML(open('http://jonrichardsoncomedy.com/gigs/'))
+
+    # Jon's HTML is annoying. Rather than each gig being in 
+    # neat, parseable <div>s or <li>s, they're in a great big single
+    # list of <h3>-<p> pairs.
+    gigs_container = dom.at_css('article.entry-content')
+
+    # Grab each <h3>...
+    gigs_container.css('h3').map do |gig_heading|
+
+      h3 = gig_heading.text.strip
+
+      # Note! What looks like a dash inside split() is not a dash, as typed on
+      # my keyboard. It's copied and pasted from the website. Different characters!
+      # Typing an actual dash failed to split the heading.
+      city = h3.split('–')[1].strip
+      date_s = h3.split('–')[0].strip
+
+      # ...Then grab the <p> directly below it.
+      p = gig_heading.at_css('+ p')
+      venue = p.children[0].text.strip
+      box_office = p.children[2].text.strip
+      phone = box_office.split(':')[1].strip
+
+      {
+        date:              date_s,
+        venue_deets:       "#{venue} #{city}",
+        venue_booking_url: p.at_css('a')['href']
+      }
+    end
+
+  end
+
+
+  def Comedian.scrape_jason_manford
+  end
+
+
+  def Comedian.scrap_lee_mack
+  end
+
+
+  def Comedian.scrap_mark_watson
+  end
+
+
+  def Comedian.scrape_bill_bailey
+  end
+
+
   # Receive a whole bunch of freshly scraped gigs. If they don't exist, create them.
   def create_gigs(gigs = {})
 

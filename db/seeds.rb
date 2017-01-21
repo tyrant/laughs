@@ -20,7 +20,7 @@ comedians = [{
   mugshot_url: "http://static.guim.co.uk/sys-images/Arts/Arts_/Pictures/2013/10/20/1382281446969/Micky-Flanagan-010.jpg" 
 }, { 
   name: 'Eddie Izzard', 
-  mugshot_url: 'https://static.independent.co.uk/s3fs-public/styles/story_medium/public/thumbnails/image/2016/01/08/02/5911761.jpg'
+  mugshot_url: 'http://images.gr-assets.com/authors/1240952053p5/12790.jpg'
 }, { 
   name: 'Bill Burr', 
   mugshot_url: 'http://speakerdata2.s3.amazonaws.com/photo/image/758589/Bill-Burr-40027.jpg' 
@@ -38,14 +38,33 @@ comedians = [{
   mugshot_url: "https://media.timeout.com/images/102273381/image.jpg" 
 }, {
   name: "Greg Davies",
-  mugshot_url: "http://res.cloudinary.com/uktv/image/upload/v1438008613/negq62si6a0c9gxyn1ac.jpg"
+  mugshot_url: "http://www.primeperformersagency.co.uk/uploads/images/speakers/greg-davies.jpg"
 }, {
   name: 'Frankie Boyle',
   mugshot_url: "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2011/11/25/1322220839370/Frankie-Boyle-007.jpg"
+}, {
+  name: "Jon Richardson",
+  mugshot_url: "https://therealchrisparkle.files.wordpress.com/2014/05/jon-richardson.jpg"
+}, {
+  name: "Jason Manford",
+  mugshot_url: "http://www.jasonmanford.com/jasonmanford/wp-content/themes/jasonmanford2014/images/JasonManford-Profile.png"
+}, {
+  name: "Lee Mack",
+  mugshot_url: "http://i.dailymail.co.uk/i/pix/2012/06/07/article-2155382-137F844B000005DC-978_306x350.jpg"
+}, {
+  name: "Mark Watson",
+  mugshot_url: "http://oxfordliteraryfestival.org/images/author/2078/mark-watson-001__main.gif"
+}, {
+  name: "Bill Bailey",
+  mugshot_url: "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2010/11/25/1290681646143/Bill-Bailey-007.jpg"
 }]
 
 comedians.each do |comedian|
-  c = Comedian.find_or_initialize_by(name: comedian[:name])
-  c.mugshot = URI.parse(comedian[:mugshot_url])
-  c.save
+  begin
+    c = Comedian.find_or_initialize_by(name: comedian[:name])
+    c.mugshot = URI.parse(comedian[:mugshot_url])
+    c.save
+  rescue Exception => e 
+    ap "Oh no! #{e.message}"
+  end
 end
