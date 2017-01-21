@@ -20,9 +20,10 @@ window.markers = _(venuesJson).map(function(venueJson) {
   });
 
   // Whenever the user clicks on a marker, we transport them to 
-  // /venues/:id-:name/?lat=:lat&lng=:lng&zoom=:z&[form-vars].
+  // /venues/:id-:name/?start_date=:date&?end_date=:date&comedians[]=:id. 
+  var uriData = new URI(window.location.search).search(true);
   google.maps.event.addListener(marker, 'click', function() {
-    window.location.href = '/venues/' + marker.venueJson.to_param + '?lat=' + $.query.get('lat') + '&lng=' + $.query.get('lng') + '&zoom=' + $.query.get('zoom') + '&' + $('#filter').serialize();
+    window.location.href = '/venues/' + marker.venueJson.to_param + '?' + $('#filter').serialize();
   });
 
   marker.venueJson = venueJson;

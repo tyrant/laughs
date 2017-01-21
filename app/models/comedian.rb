@@ -8,6 +8,12 @@ class Comedian < ApplicationRecord
   has_attached_file :mugshot, styles: { thumb: "100x100#" }
   validates_attachment_content_type :mugshot, content_type: /\Aimage\/.*\z/
 
+  # Grabs the first space's position of their reversed name (i.e. the last space of their name),
+  # then the string after that space (i.e. their surname), then orders by that.
+  scope :ordered_by_surname, -> { order("right(name, strpos(reverse(name), ' ')) asc") }
+
+
+
   # Every comedian has their own website, with its own structure and quirks, so
   # we need to have a separate method for each one.
   # Quick note on the structure of each scraping method. You can process the lot
@@ -243,7 +249,51 @@ class Comedian < ApplicationRecord
 
 
   def Comedian.scrape_sean_lock
-    {}
+
+    dom = Nokogiri::HTML(open('https://www.ents24.com/uk/tour-dates/sean-lock'))
+
+    dom.css('#event-list .event-list-item-container').map do |html_gig|
+
+      {
+        date:              html_gig.at_css('.event-date').text.strip,
+        venue_deets:       html_gig.at_css('.event-location').text.strip,
+        venue_booking_url: html_gig.at_css('a.event-list-item')['href']
+      }
+    end
+  end
+
+
+  def Comedian.scrape_greg_davies
+
+    dom = Nokogiri::HTML(open('http://gregdavies.co.uk/'))
+
+    dom.css('#live .row.text-center').map do |html_gig|
+
+      # Google Places thinks 'Newcastle City Hall' is in Australia.
+      {
+        date:              html_gig.at_css('div:nth-child(1)').text.strip,
+        venue_deets:       "#{html_gig.at_css('div:nth-child(2)').text.strip}, United Kingdom",
+        venue_booking_url: html_gig.at_css('div:nth-child(3) a')['href']
+      }
+    end
+  end
+
+
+  def Comedian.scrape_frankie_boyle
+
+    dom = Nokogiri::HTML(open('http://www.frankieboyle.com/'))
+
+    dom.css('.live-date').map do |html_gig|
+
+      venue = html_gig.at_css('.venue').text.strip
+      city = html_gig.at_css('.city').text.strip
+
+      {
+        date:              html_gig.at_css('.date').text.strip,
+        venue_deets:       "#{venue} #{city}",
+        venue_booking_url: html_gig.at_css('a')['href']
+      }
+    end
   end
 
 

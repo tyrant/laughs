@@ -23,7 +23,7 @@ comedians = [{
   mugshot_url: 'https://static.independent.co.uk/s3fs-public/styles/story_medium/public/thumbnails/image/2016/01/08/02/5911761.jpg'
 }, { 
   name: 'Bill Burr', 
-  mugshot_url: 'http://cdn.laughfactory.com/images/comedians/com0000000105_big.jpg' 
+  mugshot_url: 'http://speakerdata2.s3.amazonaws.com/photo/image/758589/Bill-Burr-40027.jpg' 
 }, { 
   name: 'Jim Jefferies', 
   mugshot_url: "http://speakerdata2.s3.amazonaws.com/photo/image/848621/Jim-J-Gig-Guide-Head-Shot.jpg" 
@@ -36,11 +36,16 @@ comedians = [{
 }, { 
   name: 'Sean Lock', 
   mugshot_url: "https://media.timeout.com/images/102273381/image.jpg" 
+}, {
+  name: "Greg Davies",
+  mugshot_url: "http://res.cloudinary.com/uktv/image/upload/v1438008613/negq62si6a0c9gxyn1ac.jpg"
+}, {
+  name: 'Frankie Boyle',
+  mugshot_url: "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2011/11/25/1322220839370/Frankie-Boyle-007.jpg"
 }]
 
 comedians.each do |comedian|
-  c = Comedian.find_or_create_by(name: comedian[:name])
-  ap c.name
+  c = Comedian.find_or_initialize_by(name: comedian[:name])
   c.mugshot = URI.parse(comedian[:mugshot_url])
   c.save
 end

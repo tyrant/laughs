@@ -44,6 +44,11 @@ body {
     background-color: rgba(0, 0, 0, 0.4);
     padding-top: 10px;
 
+    p {
+      color: white;
+      font-size: 8.5pt;
+    }
+
     label {
       color: white;
     }
@@ -52,6 +57,11 @@ body {
       height: 28px;
       font-size: 9pt;
       padding: 6px;
+    }
+
+    .select2-selection__rendered {
+      max-height: 150px;
+      overflow-y: scroll;
     }
 
     span.input-group-addon {
@@ -94,3 +104,32 @@ body {
   }
 }
 
+ul.nav-tabs {
+  margin-bottom: 10px;
+  border-bottom-color: #444;
+
+  li {
+    float: right;
+  }
+
+  li.active {
+
+    a, a:hover, a:focus, a.active  {
+      background-color: #444;
+      color: #eee;
+      border-color: #444;
+    }
+  }
+
+  li a:hover {
+    background-color: #eee;
+    color: #444;
+    border-bottom-color: #444;
+  }
+
+  a {
+    background-color: none;
+    color: white;
+    padding: 5px 10px;
+  }
+}

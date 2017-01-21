@@ -5,11 +5,10 @@ class Gig < ApplicationRecord
 
 
   def Gig.filter(params)
-    joins(:comedians, :venue).includes(:comedians, :venue)
-      .where(venue_id: params[:id])
-      .where('comedians.id in (?)', params[:comedians])
-      .where('time > ?', DateTime.parse(params[:start_date]))
-      .where('time < ?', DateTime.parse(params[:end_date]))
+    gigs = joins(:comedians, :venue).includes(:comedians, :venue).where(venue_id: params[:id])
+    gigs = gigs.where('comedians.id in (?)', params[:comedians]) unless params[:comedians].blank?
+    gigs = gigs.where('time > ?', DateTime.parse(params[:start_date])) unless params[:start_date].blank?
+    gigs = gigs.where('time < ?', DateTime.parse(params[:end_date])) unless params[:end_date].blank?
   end
   
 

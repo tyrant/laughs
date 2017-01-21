@@ -9,12 +9,8 @@ class VenuesController < ApplicationController
 
 
   def show
-    respond_to do |format|
-      format.html {
-        @venue = Venue.find(strong_params[:id])
-        @gigs = Gig.filter(strong_params)
-      }
-    end
+    @venue = Venue.find(strong_params[:id])
+    @gigs = Gig.filter(strong_params)
   end
 
 
