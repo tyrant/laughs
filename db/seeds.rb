@@ -57,6 +57,27 @@ comedians = [{
 }, {
   name: "Bill Bailey",
   mugshot_url: "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2010/11/25/1290681646143/Bill-Bailey-007.jpg"
+}, {
+  name: "Sarah Millican",
+  mugshot_url: "http://www.gigglebeats.co.uk/wp-content/uploads/Millica-Custom.jpg"
+}, {
+  name: "Sara Pascoe",
+  mugshot_url: "https://laughoutlondon.files.wordpress.com/2011/11/sara-pascoe-2007-september.jpg"
+}, {
+  name: 'Russell Howard',
+  mugshot_url: "https://s-media-cache-ak0.pinimg.com/originals/f6/42/1a/f6421a8ba5b320f0f369c33df8142ee4.png"
+}, {
+  name: "Peter Kay",
+  mugshot_url: "http://ichef-1.bbci.co.uk/news/660/cpsprodpb/11806/production/_86968617_peter_kay_bbc.jpg"
+}, {
+  name: "Omid Djalili",
+  mugshot_url: "http://s452743659.websitehome.co.uk/wp-content/uploads/2013/01/Omid-Djalili.jpg"
+}, {
+  name: "Stewart Lee",
+  mugshot_url: "https://laughoutlondon.files.wordpress.com/2014/07/stewart-lee-laugh-out-london.jpg"
+}, {
+  name: "Milton Jones",
+  mugshot_url: "http://www.jestfest.ie/wp-content/uploads/2016/02/Milton-Jones-A.jpg"
 }]
 
 comedians.each do |comedian|

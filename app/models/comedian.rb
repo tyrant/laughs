@@ -321,31 +321,86 @@ class Comedian < ApplicationRecord
       p = gig_heading.at_css('+ p')
       venue = p.children[0].text.strip
       box_office = p.children[2].text.strip
-      phone = box_office.split(':')[1].strip
 
       {
         date:              date_s,
         venue_deets:       "#{venue} #{city}",
-        venue_booking_url: p.at_css('a')['href']
+        venue_booking_url: p.at_css('a')['href'],
+        phone:             box_office.split(':')[1].strip
       }
     end
 
   end
 
 
+  # No tours right now! 
   def Comedian.scrape_jason_manford
+    {}
   end
 
 
-  def Comedian.scrap_lee_mack
+  # No tours right now!
+  def Comedian.scrape_lee_mack
   end
 
 
-  def Comedian.scrap_mark_watson
+  def Comedian.scrape_mark_watson
+
+    dom = Nokogiri::HTML(open('http://www.markwatsonthecomedian.com/category/live-shows/'))
+
+    dom.css('.entry').map do |html_gig|
+
+      h3 = html_gig.at_css('h3').text.strip
+      city = h3.split('>')[0].strip
+      venue = html_gig.at_css('.bookingdetailsleft').text.strip
+
+      {
+        date:              "#{h3.split('>')[1].strip} 2017",
+        venue_deets:       "#{city} #{venue}",
+        venue_booking_url: html_gig.at_css('.bookonline')['href']
+      }
+    end
   end
 
 
   def Comedian.scrape_bill_bailey
+
+    dom = Nokogiri::HTML(open('http://billbailey.co.uk/tour/'))
+
+    # Rr, another site lacking nice clean gig containers.
+    dom.xpath("//div[@class='entry']/p[.//a[contains(., 'TICKET LINK')]]").map do |html_gig|
+
+      # And resolvable dashes. Split the <p> on a variety of dashes,
+      # which when copypasted into a text editor, look almost identical.
+      # Trust me, they're not.
+      p_text = html_gig.text.split(/-|-|–/)
+
+      {
+        date:              p_text[1].strip,
+        venue_deets:       "#{p_text[2].strip} #{p_text[0].strip}",
+        venue_booking_url: html_gig.at_css('a')['href']
+      }
+    end
+  end
+
+
+  # No tours right now!
+  def Comedian.scrape_sarah_millican
+    {}
+  end
+
+
+  # Oh yay, she's using some frickin' Angular app thingy called Tockify.
+  # open() doesn't cut it; we'll need to use Capybara-webkit to dynamically
+  # load the page's HTML, *then* grab it.
+  # Can't get the Angular JS running!
+  def Comedian.scrape_sara_pascoe
+    {}
+  end
+
+
+  def Comedian.scrape_russell_howard
+    {}
   end
 
 
