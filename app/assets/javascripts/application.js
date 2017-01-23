@@ -17,4 +17,7 @@
 //= require underscore
 //= require moment
 //= require bootstrap-datetimepicker
+//= require react
+//= require react_ujs
+//= require components
 //= require_tree .
