@@ -74,6 +74,9 @@ gem 'bootstrap3-datetimepicker-rails', '~> 4.14.30'
 gem 'whenever'
 gem 'paperclip'
 gem 'react-rails'
+gem "sprockets"
+gem "sprockets-es6"
+gem 'rails-backbone'
 
 # Normally these are in :development, :test, but we'll be using these to scrape
 # Sara Pascoe's site, and others.
