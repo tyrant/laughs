@@ -38,52 +38,61 @@ body {
   }
 
   #overlay {
+
     position: absolute;
     top: 40px;
     right: 0px;
     background-color: rgba(0, 0, 0, 0.4);
     padding-top: 10px;
 
-    p {
-      color: white;
-      font-size: 8.5pt;
-    }
-
-    label {
-      color: white;
-    }
-
-    input {
-      height: 28px;
-      font-size: 9pt;
-      padding: 6px;
-    }
-
-    .select2-selection__rendered {
-      max-height: 150px;
-      overflow-y: scroll;
-    }
-
-    span.input-group-addon {
-      padding: 4px 5px;
-      font-size: 9pt;
-    }
-
     @media (min-width: 400px) {
       width: 330px;
-      border-radius: 0 0 0 20px;
+      border-radius: 0 0 0 15px;
     }
 
     @media (max-width: 400px) {
       width: 100%;
     }
 
-    .start-container {
-      padding-right: 5px;
+    #form {
+
+      label {
+        color: white;
+      }
+
+      input {
+        height: 28px;
+        font-size: 9pt;
+        padding: 6px;
+      }
+
+      .select2-selection__rendered {
+        max-height: 150px;
+        overflow-y: scroll;
+      }
+
+      span.input-group-addon {
+        padding: 4px 5px;
+        font-size: 9pt;
+      }
+
+      .start-container {
+        padding-right: 5px;
+      }
+
+      .end-container {
+        padding-left: 5px;
+      }
     }
 
-    .end-container {
-      padding-left: 5px;
+    #faq {
+      max-height: 200px;
+      margin-bottom: 15px;
+      overflow-y: scroll;
+
+      p {
+        font-size: 8.5pt;
+      }
     }
   }
 }
@@ -104,6 +113,7 @@ body {
   }
 }
 
+// Tweaking Bootstrap's existing plugins.
 ul.nav-tabs {
   margin-bottom: 10px;
   border-bottom-color: #444;
@@ -131,5 +141,22 @@ ul.nav-tabs {
     background-color: none;
     color: white;
     padding: 5px 10px;
+  }
+}
+
+// Tweaking Bootstrap's existing plugins.
+.panel-group {
+  margin-bottom: 0;
+
+  .panel-heading {
+    padding: 2px 10px 5px 10px;
+
+    a {
+      font-size: 9pt;
+    }
+  }
+
+  .panel-body {
+    padding: 10px;
   }
 }

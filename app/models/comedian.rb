@@ -400,8 +400,113 @@ class Comedian < ApplicationRecord
 
 
   def Comedian.scrape_russell_howard
+    
+    dom = Nokogiri::HTML(open('http://www.russell-howard.co.uk/'))
+
+    gigs = []
+    dom.css('h7').each do |month_h7|
+
+      month_year = month_h7.text.strip
+
+      month_h7.css('+ h6').children.each do |html_gig|
+        if html_gig.name == 'text' && !html_gig.text.strip.empty?
+          gig_s = html_gig.text.strip
+          date_s = gig_s.split('-')[0]
+          venue_s = gig_s.split('-')[1]
+
+          venue_booking_url = if venue_booking_a = html_gig.at_css('+ a')
+            venue_booking_a['href']
+          else
+            ''
+          end
+
+          gigs << {
+            date:              "#{date_s} #{month_year}",
+            venue_deets:       venue_s,
+            venue_booking_url: venue_booking_url
+          }
+
+        end
+      end
+    end
+
+    gigs
+  end
+
+
+  # No tours right now!
+  def Comedian.scrape_aisha_tyler
     {}
   end
+
+
+  def Comedian.scrape_reginald_d_hunter
+    
+    dom = Nokogiri::HTML(open('http://www.reginalddhunter.com/uk-tour-2017/'))
+
+    dom.css('.live-date').map do |html_gig|
+
+      {
+        date:              html_gig.at_css('.date').text.strip,
+        venue_deets:       "#{html_gig.at_css('.country').text} #{html_gig.at_css('.venue').text}",
+        venue_booking_url: html_gig.at_css('a')['href']
+      }
+    end
+  end
+
+
+  def Comedian.scrape_steve_hughes
+    
+    dom = Nokogiri::HTML(open('http://www.stevehughes.net.au/tour/'))
+
+    dom.css('.eventlist-event').map do |html_gig|
+      {
+        date:              html_gig.at_css('.event-date').text.strip,
+        venue_deets:       html_gig.at_css('.eventlist-title-link').text.strip,
+        venue_booking_url: html_gig.at_xpath('//*[text()[contains(., "Tickets Here")]]')['href'] 
+      }
+    end
+  end
+
+
+  def Comedian.scrape_henning_wehn
+
+    dom = Nokogiri::HTML(open('http://henningwehn.de/tour/'))
+    gigs = []
+
+    dom.css('.gigs_head').each do |month|
+
+      month_year = month.text.strip
+      month.css('+ .gigs_post').each do |html_gig_list|
+
+        # Argh. Cast our HTML to text, split it by <br>, then cast it back to HTML.
+        html_gig_list.children.to_s.split('<br>').each do |html_gig_text|
+
+          html_gig = Nokogiri::HTML(html_gig_text)
+
+          gig_s = html_gig.text.strip.split(/-|-|–/)
+          day = gig_s[0]
+          city = gig_s[1]
+          venue = gig_s[2]
+
+          venue_booking_url = if url = html_gig.at_css('a')
+            url['href']
+          else
+            nil
+          end
+
+          gigs << {
+            date: "#{day} #{month_year}",
+            venue_deets: "#{venue} #{city}",
+            venue_booking_url: venue_booking_url
+          }
+        end
+      end
+    end
+
+    gigs
+  end
+
 
 
   # Receive a whole bunch of freshly scraped gigs. If they don't exist, create them.
@@ -429,8 +534,7 @@ class Comedian < ApplicationRecord
         end
 
         # If we get a place result, query for a venue in our database based on place ID.
-        venue = Venue.find_by_google_place_id(place.id) if place.present? 
-
+        venue = Venue.find_by_google_place_id(place.place_id) if place.present?
         unless venue.present?
 
           # No result there either, eh? Fine. Create the frickin' thing. 
@@ -449,6 +553,7 @@ class Comedian < ApplicationRecord
       # Great. Now we've got our found/created venue. Next, we query for the existence
       # of our gig too.
       date = DateTime.parse(gig[:date])
+
       unless Gig.where(venue: venue, time: date).first
 
         # Doesn't exist. Make it.

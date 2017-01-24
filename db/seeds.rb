@@ -56,7 +56,7 @@ comedians = [{
   mugshot_url: "http://oxfordliteraryfestival.org/images/author/2078/mark-watson-001__main.gif"
 }, {
   name: "Bill Bailey",
-  mugshot_url: "http://static.guim.co.uk/sys-images/Guardian/Pix/pictures/2010/11/25/1290681646143/Bill-Bailey-007.jpg"
+  mugshot_url: "https://i.digiguide.tv/p/0810/21927-BillBailey-12234724660.jpg"
 }, {
   name: "Sarah Millican",
   mugshot_url: "http://www.gigglebeats.co.uk/wp-content/uploads/Millica-Custom.jpg"
@@ -78,6 +78,18 @@ comedians = [{
 }, {
   name: "Milton Jones",
   mugshot_url: "http://www.jestfest.ie/wp-content/uploads/2016/02/Milton-Jones-A.jpg"
+}, {
+  name: "Aisha Tyler",
+  mugshot_url: 'http://celebinfoz.com/wp-content/uploads/2015/12/Aisha-Tyler-Favorite-Things-Height.jpg'
+}, {
+  name: "Reginald D Hunter",
+  mugshot_url: 'http://d13rtmsmlweq99.cloudfront.net/cms_media/images/events/ac931fef846f2865cc2e33bdf21e01c3.1437576801.jpg'
+}, {
+  name: "Steve Hughes",
+  mugshot_url: "http://dublinconcerts.ie/content/uploads/2013/10/steve-hughes.jpg"
+}, {
+  name: "Henning Wehn",
+  mugshot_url: "http://assets2.livebrum.com/images/glee-club/blwy/home/henning-wehn-1350588456.jpg"
 }]
 
 comedians.each do |comedian|
