@@ -14,17 +14,24 @@ body {
   color: white;
   text-align: center;
 
+  .btn.btn-default {
+    color: #444;
+    font-size: 12pt;
+    padding: 2px 5px;
+    position: absolute;
+    top: 6px;
+  }
+
+  #home {
+    left: 6px;
+  }
+
   #blurb {
     line-height: 40px;
   }
 
   #toggle_overlay {
-    position: absolute;
-    top: 6px;
     right: 6px;
-    color: black;
-    font-size: 12pt;
-    padding: 2px 5px;
   }
 }
 

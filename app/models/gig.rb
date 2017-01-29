@@ -14,6 +14,7 @@ class Gig < ApplicationRecord
 
   def as_json(params={})
     {
+      id:                       self.id,
       time:                     self.time,
       venue_booking_url:        self.venue_booking_url,
       ticketmaster_booking_url: self.ticketmaster_booking_url,

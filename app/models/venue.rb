@@ -13,6 +13,7 @@ class Venue < ApplicationRecord
     venues = venues.where('comedians.id in (?)', params[:comedians]) unless params[:comedians].blank?
     venues = venues.where('gigs.time > ?', DateTime.parse(params[:start_date])) unless params[:start_date].blank?
     venues = venues.where('gigs.time < ?', DateTime.parse(params[:end_date])) unless params[:end_date].blank?
+    venues = venues.where('venues.id not in (?)', params[:without]) unless params[:without].blank?
     venues
   end
 
@@ -59,7 +60,8 @@ class Venue < ApplicationRecord
       to_param:         self.to_param,
       latitude:         self.latitude,
       longitude:        self.longitude,
-      readable_address: self.readable_address
+      readable_address: self.readable_address,
+      gigs:             self.gigs.as_json(params)
     }
   end
 end

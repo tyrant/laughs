@@ -10,6 +10,10 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
+
+
+// Third party shite
+
 //= require jquery
 //= require bootstrap-sprockets
 //= require jquery_ujs
@@ -19,5 +23,12 @@
 //= require bootstrap-datetimepicker
 //= require react
 //= require react_ujs
-//= require components
-//= require_tree .
+//= require backbone-1.3.3
+//= require backbone-relational-0.10.0
+//= require URI
+
+
+// My shite
+
+//= require components/react-components
+//= require components/backbone-components

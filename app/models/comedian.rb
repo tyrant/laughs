@@ -13,6 +13,14 @@ class Comedian < ApplicationRecord
   scope :ordered_by_surname, -> { order("right(name, strpos(reverse(name), ' ')) asc") }
 
 
+  def as_json(params={})
+    {
+      id:          self.id,
+      name:        self.name,
+      mugshot_url: self.mugshot.url(:thumb)
+    }
+  end
+
 
   # Every comedian has their own website, with its own structure and quirks, so
   # we need to have a separate method for each one.
