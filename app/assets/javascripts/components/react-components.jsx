@@ -73,7 +73,6 @@ class VenueInfo extends React.Component {
   }
 
 
-
   render() {
     const venue = this.props.currentVenue;
 
@@ -92,7 +91,7 @@ class VenueInfo extends React.Component {
                   <img width="100" height="100" src={gig.get('comedians').at(0).get('mugshot_url')} />
                   {gig.get('comedians').at(0).get('name')}<br />
                   {gig.get('time').format('Do MMMM YYYY')}<br />
-                  <a className="btn btn-success" href={gig.bookingUrl()}>Buy Tickets</a>
+                  <a className="btn btn-lg btn-success" href={gig.bookingUrl()}>Buy Tickets</a>
                 </li>
               )}
             </ul>
