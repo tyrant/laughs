@@ -25,5 +25,6 @@
 /config/secrets.yml
 
 /public/system/**
+/public/assets/**
 
 /node_modules/**
