@@ -14,7 +14,7 @@ function FAQs() {
         <div id="collapseOne" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
           <div className="panel-body">
             <p>
-              And here's me claiming your favourite comic is already here! My bad :( Thing is, I have to write a separate script to get the data for each comic, and that shit takes time. I'm adding them as fast as I can. If you'd like me to bump your comic up the list, flick me an email at epicschnozz[at]gmail[dot]com.
+              And here's me claiming your favourite comic is already here! My bad :( Problem is, I have to write a separate script to get the data for each comic, and that shit takes time. I'm adding them as fast as I can. If you'd like me to bump your comic up the list, flick me an email at epicschnozz[at]gmail[dot]com.
             </p>
             <p>
               That said, sometimes I've tried to add comedians and couldn't. Sarah Millican, Ricky Gervais, others, they're just not touring right now. <a href="http://www.sarahmillican.co.uk/live-tour">See?</a>
