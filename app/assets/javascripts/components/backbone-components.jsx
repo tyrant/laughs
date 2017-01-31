@@ -45,7 +45,7 @@ window.GigCollection = Backbone.Collection.extend({
 
   model: Gig,
 
-  sortedByTime: () => {
+  sortedByTime: function() {
     const sortedGigs = this.sortBy((gig) => {
       return gig.get('time').unix();
     });
