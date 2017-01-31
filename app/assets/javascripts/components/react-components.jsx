@@ -40,7 +40,7 @@ function FAQs() {
               Please do! Here's how:
             </p>
             <p>
-              First, adjust the map and form to display the gigs you'd like. You'll notice that with each tweak, the URL changes to match. Once you're satisfied, copy it.
+              First, adjust the map, search form and tabs to display the way you'd like. You'll notice that with each tweak, the URL changes to match. Once you're satisfied, copy it.
             </p>
             <p>
               Second, add this code to your site:
@@ -62,6 +62,56 @@ function FAQs() {
       </div>
     </div>
   )
+}
+
+
+class VenueInfo extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+  }
+
+
+
+  render() {
+    const venue = this.props.currentVenue;
+
+    if (venue instanceof Venue) {
+      return (
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <h4 className="panel-title">
+              Gigs matching your search at {venue.get('name')}
+            </h4>
+          </div>
+          <div className="panel-body">
+            <ul>
+              {venue.get('filteredGigs').sortedByTime().map((gig) =>
+                <li key={gig.id} data-gig-id={gig.id}>
+                  <img width="100" height="100" src={gig.get('comedians').at(0).get('mugshot_url')} />
+                  {gig.get('comedians').at(0).get('name')}<br />
+                  {gig.get('time').format('Do MMMM YYYY')}<br />
+                  <a className="btn btn-success" href={gig.bookingUrl()}>Buy Tickets</a>
+                </li>
+              )}
+            </ul>
+          </div>
+        </div>
+      );
+
+    } else {
+      return (
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <h4 className="panel-title">
+              Click on a venue marker to display its gig list here.
+            </h4>
+          </div>
+        </div>
+      );
+    }
+  }
 }
 
 
@@ -213,21 +263,33 @@ class Overlay extends React.Component {
     super(props);
   }
 
+
+  // Fire up an event handler for changing tabs.
+  componentDidMount() {
+    $('#overlay a[data-toggle="tab"]').on('shown.bs.tab', (e) => {
+      let newTab = $(e.target).attr('aria-controls');
+      this.props.handleTabChange(newTab);
+    });
+  }
+
   render() {
     return (
       <div id="overlay" className="container" style={{display: this.props.showOverlay ? 'block' : 'none'}}>
 
         <ul className="nav nav-tabs" role="tablist">
-          <li role="presentation" className="active">
-            <a href="#form" aria-controls="form" role="tab" data-toggle="tab">Search</a>
-          </li>
-          <li role="presentation">
+          <li role="presentation" className={this.props.tab == 'faq' ? 'active' : ''}>
             <a href="#faq" aria-controls="faq" role="tab" data-toggle="tab">FAQs</a>
+          </li>
+          <li role="presentation" className={this.props.tab == 'gigs' ? 'active' : ''}>
+            <a href="#gigs" aria-controls="gigs" role="tab" data-toggle="tab">Gigs</a>
+          </li>
+          <li role="presentation" className={this.props.tab == 'search' ? 'active' : ''}>
+            <a href="#search" aria-controls="search" role="tab" data-toggle="tab">Search</a>
           </li>
         </ul>
 
         <div className="tab-content">
-          <div role="tabpanel" className="tab-pane active" id="form">
+          <div role="tabpanel" className={this.props.tab == 'search' ? 'tab-pane active' : 'tab-pane'} id="search">
             <SearchForm 
               allComedians={this.props.allComedians} 
               selectedComedians={this.props.selectedComedians}
@@ -236,7 +298,12 @@ class Overlay extends React.Component {
               handleSearchFormChange={this.props.handleSearchFormChange}
             />
           </div>
-          <div role="tabpanel" className="tab-pane" id="faq">
+          <div role="tabpanel" className={this.props.tab == 'gigs' ? 'tab-pane active' : 'tab-pane'} id="gigs">
+            <VenueInfo 
+              currentVenue={this.props.currentVenue}
+            />
+          </div>
+          <div role="tabpanel" className={this.props.tab == 'faq' ? 'tab-pane active' : 'tab-pane'} id="faq">
             <FAQs />
           </div>
         </div>
@@ -247,7 +314,6 @@ class Overlay extends React.Component {
 
 
 class Map extends React.Component {
-
 
   constructor(props) {
     super(props);
@@ -275,9 +341,9 @@ class Map extends React.Component {
   // _.isEqual works on primitives, not objects, it seems, so pluck both arrays' IDs.
   shouldComponentUpdate(nextProps, nextState) {
 
-    oldVenueIds = this.props.selectedVenues.pluck('id');
-    newVenueIds = nextProps.selectedVenues.pluck('id');
-    //console.log(this.props.venues, nextProps.venues, 'should map update', !_.isEqual(oldVenueIds, newVenueIds))
+    oldVenueIds = this.props.selectedVenuesAndGigs.pluck('id');
+    newVenueIds = nextProps.selectedVenuesAndGigs.pluck('id');
+
     return !_.isEqual(oldVenueIds, newVenueIds);
   }
 
@@ -287,8 +353,8 @@ class Map extends React.Component {
   componentDidUpdate(prevProps, prevState) {
 
     // Rr! _.difference() only works on primitives.
-    oldVenueIds = prevProps.selectedVenues.pluck('id');
-    newVenueIds = this.props.selectedVenues.pluck('id');
+    oldVenueIds = prevProps.selectedVenuesAndGigs.pluck('id');
+    newVenueIds = this.props.selectedVenuesAndGigs.pluck('id');
 
     venueIdsToRemove = _(oldVenueIds).difference(newVenueIds);
     venueIdsToAdd = _(newVenueIds).difference(oldVenueIds);
@@ -302,7 +368,7 @@ class Map extends React.Component {
     // Add new markers.
     venueIds.forEach((venueId) => {
 
-      let venue = this.props.selectedVenues.find((venue) => { 
+      let venue = this.props.selectedVenuesAndGigs.find((venue) => { 
         return venue.id == venueId; 
       });
 
@@ -393,41 +459,23 @@ class EverythingElse extends React.Component {
           lat={this.props.lat}
           lng={this.props.lng}
           zoom={this.props.zoom}
-          selectedVenues={this.props.selectedVenues}
+          selectedVenuesAndGigs={this.props.selectedVenuesAndGigs}
           handleMapChange={this.props.handleMapChange}
           handleMarkerClick={this.props.handleMarkerClick}
         />
         <Overlay
           showOverlay={this.props.showOverlay}
+
           selectedComedians={this.props.selectedComedians}
           allComedians={this.props.allComedians}
           startDate={this.props.startDate}
           endDate={this.props.endDate}
           handleSearchFormChange={this.props.handleSearchFormChange}
+          tab={this.props.tab}
+          handleTabChange={this.props.handleTabChange}
+
+          currentVenue={this.props.currentVenue}
         />
-      </div>
-    );
-  }
-}
-
-
-class VenueView extends React.Component {
-
-  constructor(props) {
-    super(props);
-
-    this.handleBackToMapClick = this.handleBackToMapClick.bind(this);
-  }
-
-  handleBackToMapClick(e) {
-    e.preventDefault();
-    this.props.handleBackToMapClick();
-  }
-
-  render() {
-    return (
-      <div className="venue-view">
-        <button onClick={this.handleBackToMapClick}>Back to map</button>
       </div>
     );
   }
@@ -440,7 +488,6 @@ class Laughs extends React.Component {
   constructor() {
     super();
 
-
     // Set up our functions' 'this' scopes.
     this.fetchMoreVenues = this.fetchMoreVenues.bind(this);
 
@@ -448,17 +495,17 @@ class Laughs extends React.Component {
     this.handleOverlayToggleClick = this.handleOverlayToggleClick.bind(this);
     this.handleMapChange = this.handleMapChange.bind(this);
     this.handleMarkerClick = this.handleMarkerClick.bind(this);
-    this.handleBackToMapClick = this.handleBackToMapClick.bind(this);
+    this.handleTabChange = this.handleTabChange.bind(this);
 
     this.getUrlData = this.getUrlData.bind(this);
     this.setUrlData = this.setUrlData.bind(this);
     this.loadStateFromUrl = this.loadStateFromUrl.bind(this);
-    this.selectedVenues = this.selectedVenues.bind(this);
+    this.selectedVenuesAndGigs = this.selectedVenuesAndGigs.bind(this);
 
 
     // And we're off! Set shit up.
     this.state = this.loadStateFromUrl();
-    this.setUrlData();
+
     this.fetchMoreVenues();
   }
 
@@ -483,48 +530,49 @@ class Laughs extends React.Component {
       without:    this.state.allVenues.pluck('id'),
     };
 
+    if (this.state.currentVenue != 'none') {
+      data.with = [this.state.currentVenue];
+    }
+
     // Attempting to add a JSON object with the same ID twice will get rejected.
     $.getJSON('/venues', data).done((venuesJson) => {
       let allVenues = this.state.allVenues;
+      let currentVenue = null;
+
       allVenues.add(venuesJson);
+
+      if (this.state.currentVenue != 'none') {
+        currentVenue = allVenues.find(function(v) { return v.id == data.with; });
+      } else {
+        currentVenue = 'none';
+      }
+
       this.setState({
-        allVenues: allVenues,
+        currentVenue: currentVenue,
+        allVenues:    allVenues,
       });
     });
   }
 
 
-  // selectedVenues is the result of applying the search form filters to allVenues.
-  // This function is local caching, basically.
-  selectedVenues() {
-    const allVenues = this.state.allVenues;
-    const start = this.state.startDate;
-    const end = this.state.endDate;
-
-    let comedianIds = [];
+  // selectedVenuesAndGigs is the result of applying the search form filters
+  // to allVenues, and to each of their gigs. It's only ever called from render().
+  // This function is local venue caching, basically.
+  selectedVenuesAndGigs() {
+    let comedians = [];
     if (this.state.selectedComedians.length > 0) {
-      comedianIds = this.state.selectedComedians.pluck('id');
+      comedians = this.state.selectedComedians;
     } else {
-      comedianIds = this.state.allComedians.pluck('id');
+      comedians = this.state.allComedians;
     }
 
     // Return all venues with at least one gig with start > time > end, 
     // and with gig.comedians including comedianIds.
-
-    const matchingVenues = allVenues.filter((venue) => {
-
-      const gigs = venue.get('gigs').filter((gig) => {
-        const timeMatch = start.isBefore(gig.get('time')) && end.isAfter(gig.get('time'));
-        const gigComedianIds = gig.get('comedians').pluck('id');
-        const comediansMatch = _.intersection(comedianIds, gigComedianIds).length > 0;
-
-        return timeMatch && comediansMatch;
-      });
-
-      return gigs.length >= 1;
+    return this.state.allVenues.matchVenuesAndGigs({
+      start:     this.state.startDate,
+      end:       this.state.endDate,
+      comedians: comedians
     });
-
-    return new VenueCollection(matchingVenues);
   }
 
   // Event handler.
@@ -539,7 +587,6 @@ class Laughs extends React.Component {
   // venues we need to add to our cache, then update the state with comedians, start
   // and end dates.
   handleSearchFormChange(values) {
-
 
     let selectedComedians = this.state.allComedians.filter((c) => {
       return _(values.comedians).contains(c.id.toString());
@@ -573,14 +620,18 @@ class Laughs extends React.Component {
   handleMarkerClick(venue) {
     this.setState({
       currentVenue: venue,
+      tab:          'gigs',
+      showOverlay:  true,
     });
   }
 
-  handleBackToMapClick() {
+
+  handleTabChange(newTab) {
     this.setState({
-      currentVenue: 'none',
+      tab: newTab
     });
   }
+
 
   // Only ever called on page load. We load what we can from the URL, and set the rest
   // from our defaults.
@@ -601,6 +652,7 @@ class Laughs extends React.Component {
       startDate:         moment(),
       endDate:           moment().add(1, 'year'),
       showOverlay:       true,
+      tab:               'search',
     };
 
     let urlData = this.getUrlData();
@@ -618,6 +670,7 @@ class Laughs extends React.Component {
       startDate:         urlData.startDate ? urlData.startDate : defaults.startDate,
       endDate:           urlData.endDate ? urlData.endDate : defaults.endDate,
       showOverlay:       urlData.showOverlay != null ? urlData.showOverlay : defaults.showOverlay,
+      tab:               urlData.tab ? urlData.tab : defaults.tab,
     };
   }
 
@@ -654,11 +707,12 @@ class Laughs extends React.Component {
 
     return {
       currentVenue:      pathObj.v || 'none',
+      tab:               pathObj.t,
       selectedComedians: selectedComedians.length > 0 ? new ComedianCollection(selectedComedians) : null, 
       lat:               parseFloat(pathObj.a) || null,
       lng:               parseFloat(pathObj.n) || null,
       zoom:              parseInt(pathObj.z) || null,
-      showOverlay:       pathObj.o == 't',
+      showOverlay:       pathObj.o != 'f',
       startDate:         pathObj.s ? moment(pathObj.s) : null,
       endDate:           pathObj.e ? moment(pathObj.e) : null,
     };
@@ -672,6 +726,7 @@ class Laughs extends React.Component {
   setUrlData() {
     const pathObj = {
       v: this.state.currentVenue instanceof Venue ? this.state.currentVenue.id : 'none',
+      t: this.state.tab,
       c: this.state.selectedComedians.pluck('id').join(','),
       a: this.state.lat,
       n: this.state.lng,
@@ -689,39 +744,32 @@ class Laughs extends React.Component {
   // If we've got a venue, render its view instead.
   render() {
 
-    if (this.state.currentVenue instanceof Venue) {
-      return (
-        <VenueView 
-          venue={this.state.currentVenue}
-          handleBackToMapClick={this.handleBackToMapClick}
+    return (
+      <div>
+        <Banner 
+          handleOverlayToggleClick={this.handleOverlayToggleClick}
         />
-      );
+        <EverythingElse 
+          showOverlay={this.state.showOverlay}
 
-    } else {
-      const selectedVenues = this.selectedVenues();
-      return (
-        <div>
-          <Banner 
-            handleOverlayToggleClick={this.handleOverlayToggleClick}
-          />
-          <EverythingElse 
-            showOverlay={this.state.showOverlay}
+          lat={this.state.lat}
+          lng={this.state.lng}
+          zoom={this.state.zoom}
+          selectedVenuesAndGigs={this.selectedVenuesAndGigs()}
+          handleMapChange={this.handleMapChange}
+          handleMarkerClick={this.handleMarkerClick}
 
-            lat={this.state.lat}
-            lng={this.state.lng}
-            zoom={this.state.zoom}
-            selectedVenues={selectedVenues}
-            handleMapChange={this.handleMapChange}
-            handleMarkerClick={this.handleMarkerClick}
+          selectedComedians={this.state.selectedComedians}
+          allComedians={this.state.allComedians}
+          startDate={this.state.startDate}
+          endDate={this.state.endDate}
+          handleSearchFormChange={this.handleSearchFormChange}
+          tab={this.state.tab}
+          handleTabChange={this.handleTabChange}
 
-            selectedComedians={this.state.selectedComedians}
-            allComedians={this.state.allComedians}
-            startDate={this.state.startDate}
-            endDate={this.state.endDate}
-            handleSearchFormChange={this.handleSearchFormChange}
-          />
-        </div>
-      );
-    }
+          currentVenue={this.state.currentVenue}
+        />
+      </div>
+    );
   }
 }

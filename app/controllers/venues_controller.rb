@@ -20,7 +20,7 @@ class VenuesController < ApplicationController
 
 
   def strong_params
-    params.permit({ comedians: [] }, { without: [] }, :start_date, :end_date, :id, :lat, :lng, :zoom)
+    params.permit({ comedians: [] }, { with: [] }, { without: [] }, :start_date, :end_date, :id, :lat, :lng, :zoom)
   end
 
 end

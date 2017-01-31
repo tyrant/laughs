@@ -349,6 +349,7 @@ class Comedian < ApplicationRecord
 
   # No tours right now!
   def Comedian.scrape_lee_mack
+    {}
   end
 
 
@@ -504,8 +505,8 @@ class Comedian < ApplicationRecord
           end
 
           gigs << {
-            date: "#{day} #{month_year}",
-            venue_deets: "#{venue} #{city}",
+            date:              "#{day} #{month_year}",
+            venue_deets:       "#{venue} #{city}",
             venue_booking_url: venue_booking_url
           }
         end
@@ -516,9 +517,53 @@ class Comedian < ApplicationRecord
   end
 
 
+  def Comedian.scrape_louis_ck
+
+    dom = Nokogiri::HTML(open('https://louisck.net/tour-dates'))
+
+    dom.css('.tour-row').map do |html_gig|
+
+      city = html_gig.at_css('.tour-city').text.strip
+      venue = html_gig.at_css('.venue-name').text.strip
+
+      {
+        date:              html_gig.at_css('.tour-date').text.strip,
+        venue_deets:       "#{venue} #{city}",
+        venue_booking_url: html_gig.at_css('a.tickets')['href']
+      }
+    end
+  end
+
+
+  # Not written yet
+  def Comedian.scrape_peter_kay
+    {}
+  end
+
+
+  # Not written yet
+  def Comedian.scrape_omid_djalili
+    {}
+  end
+
+
+  # Not written yet 
+  def Comedian.scrape_stewart_lee
+    {}
+  end
+
+
+  # Not written yet
+  def Comedian.scrape_milton_jones
+    {}
+  end
+
+
 
   # Receive a whole bunch of freshly scraped gigs. If they don't exist, create them.
   def create_gigs(gigs = {})
+
+    created_gig_count = 0
 
     gigs.each do |gig|
 
@@ -572,10 +617,13 @@ class Comedian < ApplicationRecord
           venue_booking_url:        gig[:venue_booking_url],
           ticketmaster_booking_url: gig[:ticketmaster_booking_url]
         })
+
+        created_gig_count += 1
       end
     end
 
-    # And we're done!
+    # And we're done! For kewl logging purposes, return our created gig count.
+    created_gig_count
   end
 
 end
