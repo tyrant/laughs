@@ -1,4 +1,4 @@
-class AddAttachmentMugshotToComedians < ActiveRecord::Migration
+class AddAttachmentMugshotToComedians < ActiveRecord::Migration[5.0]
   def self.up
     change_table :comedians do |t|
       t.attachment :mugshot

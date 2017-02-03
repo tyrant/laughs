@@ -535,13 +535,26 @@ class Comedian < ApplicationRecord
   end
 
 
-  # Not written yet
   def Comedian.scrape_peter_kay
-    {}
+    
+    dom = Nokogiri::HTML(open('http://www.stereoboard.com/peter-kay-tickets'))
+
+    dom.css('.listing-events').map do |html_gig|
+
+      venue = html_gig.at_css('.artistname').text.strip
+      city = html_gig.at_css('.gig_location_details').text.strip
+
+      {
+        date:              html_gig.at_css('.completedate').text.strip,
+        venue_deets:       "#{venue} #{city}",
+        venue_booking_url: html_gig.at_css('.buytickets')['href']
+      }
+    end
   end
 
 
-  # Not written yet
+  # Oh yay. http://www.omidnoagenda.com/omiddjalilievent.html is one of those 
+  # nigh-unscrapable monstrosities. Can be done, but clunky as fuck.
   def Comedian.scrape_omid_djalili
     {}
   end

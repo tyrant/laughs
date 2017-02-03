@@ -30,5 +30,12 @@
 
 // My shite
 
-//= require components/react-components
+//= require components/react/faqs
+//= require components/react/venue-info
+//= require components/react/search-form
+//= require components/react/map
+//= require components/react/banner
+//= require components/react/overlay
+//= require components/react/laughs
+
 //= require components/backbone-components

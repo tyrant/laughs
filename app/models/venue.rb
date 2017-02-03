@@ -11,8 +11,8 @@ class Venue < ApplicationRecord
   def Venue.filter(params)
     venues = locatable.joins(gigs: :comedians).includes(gigs: :comedians)
     venues = venues.where('comedians.id in (?)', params[:comedians]) unless params[:comedians].blank?
-    venues = venues.where('gigs.time > ?', DateTime.parse(params[:start_date])) unless params[:start_date].blank?
-    venues = venues.where('gigs.time < ?', DateTime.parse(params[:end_date])) unless params[:end_date].blank?
+    venues = venues.where('gigs.time > ?', Time.at(params[:start_date].to_i).to_datetime) unless params[:start_date].blank?
+    venues = venues.where('gigs.time < ?', Time.at(params[:end_date].to_i).to_datetime) unless params[:end_date].blank?
     venues = venues.where('venues.id not in (?)', params[:without]) unless params[:without].blank?
     venues = venues.or(venues.where('venues.id in (?)', params[:with])) unless params[:with].blank?
     venues

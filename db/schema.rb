@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170120073954) do
+ActiveRecord::Schema.define(version: 20170202055428) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(version: 20170120073954) do
     t.datetime "updated_at",               null: false
     t.string   "venue_booking_url"
     t.string   "ticketmaster_booking_url"
+    t.index ["time"], name: "index_gigs_on_time", using: :btree
     t.index ["venue_id"], name: "index_gigs_on_venue_id", using: :btree
   end
 
