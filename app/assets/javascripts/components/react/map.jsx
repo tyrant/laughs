@@ -22,7 +22,7 @@ class Map extends React.Component {
 
     // Fire up the clusterer.
     this.clusterer = new MarkerClusterer(this.map, [], {
-      imagePath: '/assets/m'
+      imagePath: '/m'
     });
 
     // Fire up a few event listeners.
