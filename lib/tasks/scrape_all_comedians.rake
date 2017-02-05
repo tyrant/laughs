@@ -7,8 +7,8 @@ task scrape_all_comedians: :environment do
       ap "Scraping #{comedian.name}..."
       gigs = Comedian.send("scrape_#{comedian.name.parameterize.underscore}")
       ap "Scraped #{comedian.name}"
-      comedian.create_gigs(gigs)
-      ap "Created gigs for #{comedian.name}"
+      new_gig_count = comedian.create_gigs(gigs)
+      ap "Created #{new_gig_count} gigs for #{comedian.name}"
 
     rescue Exception => e
       ap "Oh no! Error scraping #{comedian.name}:\n"

@@ -652,6 +652,12 @@ class Comedian < ApplicationRecord
   end
 
 
+  # Not written yet
+  def Comedian.scrape_rob_beckett
+    {}
+  end
+
+
 
   # Receive a whole bunch of freshly scraped gigs. If they don't exist, create them.
   def create_gigs(gigs = {})
