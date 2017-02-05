@@ -47,7 +47,7 @@ class Comedian < ApplicationRecord
     # Use open() to get the HTML text for Jimmy Carr's Upcoming Gigs page,
     # then use Nokogiri to construct its DOM for our parsing pleasure.
 
-    html_text = open('http://www.jimmycarr.com/live/?show=2017-uk-tour-dates')
+    html_text = open('https://www.jimmycarr.com/live/?show=2017-uk-tour-dates')
     dom = Nokogiri::HTML(html_text)
 
     # Grab each individual gig on Jimmy Carr's gig page, and iterate over it.
@@ -292,7 +292,7 @@ class Comedian < ApplicationRecord
 
   def Comedian.scrape_frankie_boyle
 
-    dom = Nokogiri::HTML(open('http://www.frankieboyle.com/'))
+    dom = Nokogiri::HTML(open('https://www.frankieboyle.com/'))
 
     dom.css('.live-date').map do |html_gig|
 
