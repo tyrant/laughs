@@ -26,6 +26,7 @@
 //= require backbone-1.3.3
 //= require backbone-relational-0.10.0
 //= require URI
+//= require map-clusterer
 
 
 // My shite

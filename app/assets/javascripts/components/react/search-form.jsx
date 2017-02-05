@@ -11,7 +11,7 @@ class SearchForm extends React.Component {
 
     // Fire up the select2 box.
     $('#comedians').select2({
-      placeholder: 'Click or type to find gigs by...',
+      placeholder: 'Click or type to find gigs performed by...',
       templateResult: (comic) => {
         if (comic.element) {
           return $('<span><img width="100" height="100" src="' + comic.element.attributes['data-src'].nodeValue + '">&nbsp;&nbsp;' + comic.text + '</span>');

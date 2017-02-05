@@ -1,5 +1,6 @@
 class Map extends React.Component {
 
+
   constructor(props) {
     super(props);
 
@@ -10,17 +11,25 @@ class Map extends React.Component {
     this.removeOldVenuesFromMap = this.removeOldVenuesFromMap.bind(this);
   }
 
+
   componentDidMount() {
+
     // Fire up the map.
     this.map = new google.maps.Map(this.refs.map, {
       center: new google.maps.LatLng(this.props.lat, this.props.lng),
       zoom:   this.props.zoom
     });
 
+    // Fire up the clusterer.
+    this.clusterer = new MarkerClusterer(this.map, [], {
+      imagePath: '/assets/m'
+    });
+
     // Fire up a few event listeners.
     this.map.addListener('dragend', this.handleMapChange);
     this.map.addListener('zoom_changed', this.handleMapChange); 
   }
+
 
   // We only want to update the map if the venue list has changed.
   // _.isEqual works on primitives, not objects, it seems, so pluck both arrays' IDs.
@@ -48,10 +57,11 @@ class Map extends React.Component {
     this.removeOldVenuesFromMap(venueIdsToRemove);
   }
 
+
   addNewVenuesToMap(venueIds) {
 
-    // Add new markers.
-    venueIds.forEach((venueId) => {
+    // Set our current markers list.
+    let addedMarkers = _(venueIds).map((venueId) => {
 
       let venue = this.props.selectedVenuesAndGigs.find((venue) => { 
         return venue.id == venueId; 
@@ -60,32 +70,50 @@ class Map extends React.Component {
       let marker = new google.maps.Marker({
         position: new google.maps.LatLng(venue.get('latitude'), venue.get('longitude')),
         title:    venue.get('name') + ', ' + venue.get('readable_address'),
-        map:      this.map
+        map:      this.map,
       });
 
       marker.addListener('click', (e) => {
         this.props.handleMarkerClick(marker.venue);
       });
 
-      marker.setMap(this.map);
       marker.venue = venue;
+      return marker;
+    });
+
+    // Add our newly created markers to (1) this.markers, and (2) the clusterer.
+    _(addedMarkers).each((marker) => {
       this.markers.push(marker);
     });
+    this.clusterer.addMarkers(this.markers);
   }
+
 
   removeOldVenuesFromMap(venueIds) {
 
-    venueIds.forEach((venueId) => {
-      var marker = _(this.markers).find((marker) => { 
+    // Calculate which markers are to be removed
+    var removedMarkers = _(venueIds).map((venueId) => {
+      return _(this.markers).find((marker) => { 
         return marker.venue.id == venueId; 
       });
-      marker.setMap(null);
     });
 
+    // Remove them from this.markers
     this.markers = _(this.markers).filter((marker) => {
       return !_(venueIds).contains(marker.venue.id);
     });
+
+    // Set their map to null
+    _(removedMarkers).each((marker) => {
+      marker.setMap(null);
+    });
+
+    // Remove markers from clusterer. Testing shows this is much much faster
+    // than calling this.clusterer.removeMarker() on each removed marker.
+    this.clusterer.clearMarkers();
+    this.clusterer.addMarkers(this.markers);
   }
+
 
   // Called on events dragend and zoom_changed. Return latitude, longitude and zoom values.
   handleMapChange() {
@@ -95,6 +123,7 @@ class Map extends React.Component {
       zoom: this.map.getZoom(),
     });
   }
+
 
   render() {
     return <div id="map" ref="map"></div>;

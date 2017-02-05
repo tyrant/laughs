@@ -6,7 +6,10 @@ class Comedian < ApplicationRecord
   has_many :venues, through: :gigs
 
   has_attached_file :mugshot, styles: { thumb: "100x100#" }
+  validates_attachment :mugshot, presence: true
   validates_attachment_content_type :mugshot, content_type: /\Aimage\/.*\z/
+
+  validates :name, presence: true
 
   # Grabs the first space's position of their reversed name (i.e. the last space of their name),
   # then the string after that space (i.e. their surname), then orders by that.
@@ -554,9 +557,67 @@ class Comedian < ApplicationRecord
 
 
   # Oh yay. http://www.omidnoagenda.com/omiddjalilievent.html is one of those 
-  # nigh-unscrapable monstrosities. Can be done, but clunky as fuck.
+  # nigh-unscrapable monstrosities. Can be done and has been done, but clunky as fuck.
   def Comedian.scrape_omid_djalili
-    {}
+
+    months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
+    current_month = nil
+    year = 2016
+    
+    dom = Nokogiri::HTML(open("http://www.omidnoagenda.com/omiddjalilievent.html"))
+
+    no_blank_rows = dom.css('table.style3 tr').find_all do |tr|
+      !tr.text.squish.blank?
+    end
+
+    gigs_plus_month_boundaries = no_blank_rows.map do |tr|
+
+      day = tr.at_css('td:nth-child(1)').text.squish.downcase
+      is_a_month = months.any?{ |month| month.include?(day) } && !day.empty?
+
+      # Is 'day' no longer a day of the month, but a month name? We're on a new month.
+      if is_a_month && current_month.nil?
+        current_month = day
+        next
+
+      elsif is_a_month
+        next_month_index = months.find_index(day) % 12
+        current_month = months[next_month_index]
+
+        if current_month == 'january'
+          year += 1
+        end
+        next
+
+      # RRrr! St00pid custom rows.
+      elsif day.empty? || day == "aug 23—27"
+        next
+
+      else 
+
+        city = tr.at_css('td:nth-child(2)').text.squish
+        venue = tr.at_css('td:nth-child(3)').text.squish
+        venue_sold_out_text = tr.at_css('td:nth-child(3) .style4').text.squish
+        venue = venue.gsub(venue_sold_out_text, '')
+
+        venue_booking_url = tr.at_css('a')['href']
+
+        phone = if tr.css('td').length == 5
+          tr.at_css('td:nth-child(4)').text.squish
+        else
+          ''
+        end
+
+        {
+          date:              "#{day} #{current_month} #{year}",
+          venue_deets:       "#{venue} #{city}".gsub('SOLD OUT', ''),
+          phone:             phone,
+          venue_booking_url: venue_booking_url
+        }
+      end
+    end
+
+    gigs_plus_month_boundaries.compact!
   end
 
 
@@ -572,6 +633,25 @@ class Comedian < ApplicationRecord
   end
 
 
+  def Comedian.scrape_andy_zaltzman
+
+    dom = Nokogiri::HTML(open('http://andyzaltzman.co.uk/shows/'))
+
+    dom.css('.gigpress-table tbody:nth-child(n+2)').map do |html_gig|
+
+      venue = html_gig.at_css('.gigpress-venue').text.squish
+      city = html_gig.at_css('.gigpress-city').text.squish
+      country = html_gig.at_css('.gigpress-country').text.squish
+
+      {
+        date:              html_gig.at_css('.gigpress-date').text.squish.gsub!('/17', '/2017'),
+        venue_deets:       "#{venue} #{city} #{country}",
+        venue_booking_url: html_gig.at_css('.gigpress-tickets-link')['href']
+      }
+    end
+  end
+
+
 
   # Receive a whole bunch of freshly scraped gigs. If they don't exist, create them.
   def create_gigs(gigs = {})
@@ -580,53 +660,21 @@ class Comedian < ApplicationRecord
 
     gigs.each do |gig|
 
-      # We really, really don't want to hit the Places API every single goddamn time
-      # we check a venue's uniqueness. Chew up our quota in no time.
-      # I know the daily limit is 150,000, but still. Let's be scalable.
-      # First, use our scraped 'venue_deets' to query for the venue.
-
-      # Slight problem. Say two or more sites have crappy, differing descriptions 
-      # for the same venue. We don't want to create multiple venue objects that turn out
-      # to have the same place ID. So if finding an existing venue from venue_deets
-      # doesn't work, hit up the Places API, get a place ID, and query for that.
-      unless venue = Venue.find_by_deets(gig[:venue_deets])
-
-        # No luck! Hit up the Places API. If GP returns no results, or throws a
-        # query limit exception, we still want the venue saved. 
-        begin
-          place = GP.first_plausible_spot(gig[:venue_deets])
-        rescue
-          place = nil
-        end
-
-        # If we get a place result, query for a venue in our database based on place ID.
-        venue = Venue.find_by_google_place_id(place.place_id) if place.present?
-        unless venue.present?
-
-          # No result there either, eh? Fine. Create the frickin' thing. 
-          venue = Venue.create({
-            name:             place.present? ? place.name : nil,        
-            readable_address: place.present? ? place.formatted_address : nil,
-            latitude:         place.present? ? place.lat : nil,
-            longitude:        place.present? ? place.lng : nil,
-            google_place_id:  place.present? ? place.place_id : nil,
-            phone:            gig[:phone],
-            deets:            gig[:venue_deets]
-          })
-        end
-      end
+      # First, for each of our gigs, we need a venue to host it at. Query our Venues
+      # table for it, or if it doesn't exist, create it.
+      venue = Venue.find_or_create_by_gig_deets(gig)
 
       # Great. Now we've got our found/created venue. Next, we query for the existence
       # of our gig too.
-      date = DateTime.parse(gig[:date])
+      time = DateTime.parse(gig[:date])
 
-      unless Gig.where(venue: venue, time: date).first
+      unless Gig.where(venue: venue, time: time).first
 
         # Doesn't exist. Make it.
         Gig.create({
           comedians:                [self],
           venue:                    venue,
-          time:                     date,
+          time:                     time,
           venue_booking_url:        gig[:venue_booking_url],
           ticketmaster_booking_url: gig[:ticketmaster_booking_url]
         })

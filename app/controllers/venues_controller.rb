@@ -10,12 +10,6 @@ class VenuesController < ApplicationController
   end
 
 
-  def show
-    @venue = Venue.find(strong_params[:id])
-    @gigs = Gig.filter(strong_params)
-  end
-
-
   private
 
 

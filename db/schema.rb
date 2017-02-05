@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170202055428) do
+ActiveRecord::Schema.define(version: 20170203201539) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,6 +54,8 @@ ActiveRecord::Schema.define(version: 20170202055428) do
     t.string   "google_place_id"
     t.string   "phone"
     t.string   "deets"
+    t.index ["latitude"], name: "index_venues_on_latitude", using: :btree
+    t.index ["longitude"], name: "index_venues_on_longitude", using: :btree
   end
 
 end

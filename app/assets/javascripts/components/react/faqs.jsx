@@ -60,6 +60,41 @@ function FAQs() {
           </div>
         </div>
       </div>
+
+      <div className="panel panel-default">
+        <div className="panel-heading" role="tab" id="headingThree">
+          <h4 className="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#faq_accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Sometimes a venue is located with the right city name, but in the wrong country! What's the deal?
+            </a>
+          </h4>
+        </div>
+        <div id="collapseThree" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div className="panel-body">
+            <p>
+              Rr, I know. It's a colossal pain in the ass for me too.
+            </p>
+            <p>
+              Here's the deal. I shall make an example of Omid Djalili. The problem extends far further than just him, but his website is exceptionally heinous to extract consistent data from, so he can get stuffed.
+            </p>
+            <p>
+              Consider this search: <a href="scicencethisbitchup.com/?v=none&g=s&t=search&c=22&a=-33.502522&n=101.506165&z=3&o=t&s=1487674800&e=1487761200">scicencethisbitchup.com/?v=none&g=s&t=search&c=22&a=-33.502522&n=101.506165&z=3&o=t&s=1487674800&e=1487761200</a>. If I've got my data right, it shows exactly one of his gigs - located in Perth, Australia. If you check the webpage I've lovingly swiped that gig, and others, off, <a href="http://www.omidnoagenda.com/omiddjalilievent.html">http://www.omidnoagenda.com/omiddjalilievent.html</a>, you'll see his February 22 2017 gig is indeed in Perth - but for the UK tour. Perth is in Scotland. My web scripts have to iterate over his page, you see, line by line, and the only content I can relay to Google's APIs is "PERTH CONCERT HALL". 
+            </p>
+            <p>
+              Aspiring script kiddies will no doubt retort "but why cant u append UNITED KINGDOM to your API calls?" Fair point, I could - but that'd then muck up the December 2016 international gigs, further up the page. I've spent all morning countering Omid's quirks. It goes on and on and friggin' <em>on</em>. At some point you just have to say screw it, I've sunk enough time polishing your turd. You write shitty gig info, I'll display your shitty gig info.
+            </p>
+            <p>
+              Don't get me wrong, I honestly don't intend that to sound as rude as it does! Non-techies might look at Omid's events page and think "It's not that bad, is it? It's in a ... <em>fairly</em> well formatted table, decent structure, what's the problem?"
+            </p>
+            <p>
+              Fair points. Problem is, the site has a zillion fiddly edge cases. I've only mentioned a few here. There are some real beauties amongst the websites of today's comics, though. Check out Greg Davies's page. http://gregdavies.co.uk/ Phwoar.
+            </p>
+            <p>
+              And it could be worse, too. Look at Sara Pascoe's page: http://www.sarapascoe.com/gigs.html At face value it looks just peachy, until techies like me start digging into it - and turns out she's using some third-party embedded calendar app called Tockify. It's an entire Angular app. (For non-techies, Angular is a technical term meaning "overengineered"). And it actively fights back against being parsed. Hell of a shame, because I love her stuff, but I can't add her gigs to my site.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

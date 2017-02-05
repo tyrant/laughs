@@ -90,6 +90,12 @@ comedians = [{
 }, {
   name: "Henning Wehn",
   mugshot_url: "http://assets2.livebrum.com/images/glee-club/blwy/home/henning-wehn-1350588456.jpg"
+}, {
+  name: 'Andy Zaltzman',
+  mugshot_url: 'https://www.vivacity-peterborough.com/media/4041/25_andy_zaltman.jpg'
+}, {
+  name: "Rob Beckett",
+  mugshot_url: "http://www.colstonhall.org/wp-content/uploads/2013/10/Rob-Beckett-High-Res-20131-e1381919189325-460x300.jpg"
 }]
 
 comedians.each do |comedian|

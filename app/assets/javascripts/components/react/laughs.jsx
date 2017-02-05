@@ -80,7 +80,6 @@ class Laughs extends React.Component {
 
   // If our search form's comedians list is empty, default to all of them.
   comedians() {
-    console.log('called comedians()')
     if (this.state.selectedComedians.length > 0) {
       return this.state.selectedComedians;
     } else {
@@ -290,7 +289,7 @@ class Laughs extends React.Component {
       s: this.state.startDate,
       e: this.state.endDate,
     };
-    const pairs = _(pathObj).map((v, k) => { return k + '=' + v; });
+    const pairs = _(pathObj).map((v, k) => k + '=' + v);
     window.history.pushState(pairs, 'Updated state', '?' + pairs.join('&'));
   }
 
