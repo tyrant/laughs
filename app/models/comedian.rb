@@ -597,7 +597,11 @@ class Comedian < ApplicationRecord
 
         city = tr.at_css('td:nth-child(2)').text.squish
         venue = tr.at_css('td:nth-child(3)').text.squish
-        venue_sold_out_text = tr.at_css('td:nth-child(3) .style4').text.squish
+        venue_sold_out_text = if sold_out = tr.at_css('td:nth-child(3) .style4')
+          sold_out.text.squish
+        else
+          ''
+        end
         venue = venue.gsub(venue_sold_out_text, '')
 
         venue_booking_url = tr.at_css('a')['href']
