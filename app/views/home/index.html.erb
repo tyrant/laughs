@@ -3,10 +3,11 @@
 <% end %>
 
 <script>
-$(document).ready(function() {
-  window.allComedians = <%= raw Comedian.ordered_by_surname.to_json %>;
-  ReactDOM.render(React.createElement(Laughs), document.getElementById('laughs'));
-});
+  $(function() {
+    window.allComedians = <%= raw Comedian.ordered_by_surname.to_json %>;
+    ReactDOM.render(React.createElement(Laughs), document.getElementById('laughs'));
+  });
 </script>
 
 <div id="laughs"></div>
+

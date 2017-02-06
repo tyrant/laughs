@@ -28,6 +28,11 @@ class Map extends React.Component {
     // Fire up a few event listeners.
     this.map.addListener('dragend', this.handleMapChange);
     this.map.addListener('zoom_changed', this.handleMapChange); 
+
+    // And fire map change just once. 
+    google.maps.event.addListenerOnce(this.map, 'idle', () => {
+      this.handleMapChange();
+    });
   }
 
 
@@ -115,12 +120,13 @@ class Map extends React.Component {
   }
 
 
-  // Called on events dragend and zoom_changed. Return latitude, longitude and zoom values.
+  // Called once onMount, and on events dragend and zoom_changed. 
+  // Return center, bounds and zoom values.
   handleMapChange() {
     this.props.handleMapChange({
-      lat:  this.map.getCenter().lat(),
-      lng:  this.map.getCenter().lng(),
-      zoom: this.map.getZoom(),
+      center: this.map.getCenter(),
+      zoom:   this.map.getZoom(),
+      bounds: this.map.getBounds(),
     });
   }
 

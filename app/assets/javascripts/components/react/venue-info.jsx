@@ -17,7 +17,7 @@ class VenueInfo extends React.Component {
   getGigs() {
     return this.props
       .currentVenue
-      .get('gigs')
+      .gigs()
       .filteredByFormValues(this.props.gigFilters)
       .sortedByTime();
   }
@@ -32,17 +32,6 @@ class VenueInfo extends React.Component {
             <h4 className="panel-title">
               Gigs at {venue.get('name')}
             </h4>
-            <label htmlFor="all_gigs">
-              <input 
-                type="radio" 
-                id="all_gigs" 
-                name="gig_filter" 
-                value="a" 
-                onChange={this.handleGigFilterChange} 
-                checked={this.props.gigFilters.gigFilter == 'a'}
-                />
-              All
-            </label>
             <label htmlFor="searched_gigs">
               <input 
                 type="radio" 
@@ -54,13 +43,24 @@ class VenueInfo extends React.Component {
                 />
               Matching your search
             </label>
+            <label htmlFor="all_gigs">
+              <input 
+                type="radio" 
+                id="all_gigs" 
+                name="gig_filter" 
+                value="a" 
+                onChange={this.handleGigFilterChange} 
+                checked={this.props.gigFilters.gigFilter == 'a'}
+                />
+              All
+            </label>
           </div>
           <div className="panel-body">
             <ul>
               {this.getGigs().map((gig) =>
                 <li key={gig.id} data-gig-id={gig.id}>
-                  <img width="100" height="100" src={gig.get('comedians').at(0).get('mugshot_url')} />
-                  {gig.get('comedians').at(0).get('name')}<br />
+                  <img width="100" height="100" src={gig.comedians().at(0).get('mugshot_url')} />
+                  {gig.comedians().at(0).get('name')}<br />
                   {moment(gig.get('time')*1000).format('Do MMMM YYYY')}<br />
                   <a className="btn btn-lg btn-success" href={gig.bookingUrl()}>Buy Tickets</a>
                 </li>

@@ -1,15 +1,6 @@
-window.Comedian = Backbone.Model.extend({
+var Comedian = Supermodel.Model.extend();
 
-});
-
-window.Gig = Backbone.Model.extend({
-
-  initialize: function(params) {
-    this.set({
-      comedians: new ComedianCollection(params.comedians),
-      time:      params.time,
-    });
-  },
+var Gig = Supermodel.Model.extend({
 
   toJSON: function() {
     return {
@@ -27,23 +18,22 @@ window.Gig = Backbone.Model.extend({
 
 });
 
-window.Venue = Backbone.Model.extend({
 
-  initialize: function(params) {
-    this.set({ 
-      gigs: new GigCollection(params.gigs) 
-    });
+var Venue = Supermodel.Model.extend();
+
+
+var ComedianCollection = Backbone.Collection.extend({
+
+  model: function(attrs, options) {
+    return Comedian.create(attrs, options);
   }
-
 });
 
-window.ComedianCollection = Backbone.Collection.extend({
-  model: Comedian
-});
+var GigCollection = Backbone.Collection.extend({
 
-window.GigCollection = Backbone.Collection.extend({
-
-  model: Gig,
+  model: function(attrs, options) {
+    return Gig.create(attrs, options);
+  },
 
 
   sortedByTime: function() {
@@ -52,17 +42,30 @@ window.GigCollection = Backbone.Collection.extend({
   },
 
 
-  // Receive: comedian IDs, start/end dates, and gig filter ('s'/'a').
+  // Receive: comedians, start/end timestamps, and gig filter ('s'/'a').
+  // Comedians is optional.
   filteredByFormValues: function(p) {
 
     if (p.gigFilter == 's') {
 
-      const comedianIds = p.comedians.pluck('id');
+      let comedianIds = null;
+
+      if (p.comedians) {
+        comedianIds = p.comedians.pluck('id');
+      }
 
       const gigs = this.filter((gig) => {
-        const timeMatch = p.start < gig.get('time') && p.end > gig.get('time');
-        const gigComedianIds = gig.get('comedians').pluck('id');
-        const comediansMatch = _.intersection(comedianIds, gigComedianIds).length > 0;
+        let n = moment().unix()
+
+        const timeMatch = p.start < gig.get('time') && gig.get('time') < p.end;
+
+        let comediansMatch = null;
+        if (p.comedians) {
+          const gigComedianIds = gig.comedians().pluck('id');
+          comediansMatch = _.intersection(comedianIds, gigComedianIds).length > 0;
+        } else {
+          comediansMatch = true;
+        }
 
         return timeMatch && comediansMatch;
       });
@@ -76,9 +79,26 @@ window.GigCollection = Backbone.Collection.extend({
 });
 
 
-window.VenueCollection = Backbone.Collection.extend({
+var VenueCollection = Backbone.Collection.extend({
 
-  model: Venue,
+  model: function(attrs, options) {
+    return Venue.create(attrs, options);
+  },
+
+
+  // Return all venues bounded by the lat/lng ne/sw pair supplied.
+  // Only ever called from laughs.fetchMoreVenues().
+  within: function(p) {
+
+    const matchingVenues = this.filter((venue) => {
+      const lat = venue.get('latitude');
+      const lng = venue.get('longitude');
+
+      return p.sw_lat < lat && lat < p.ne_lat && p.sw_lng < lng && lng < p.ne_lng;
+    });
+
+    return new VenueCollection(matchingVenues);
+  },
 
 
   // Receive a comedian list, start date, end date, and gig filter.
@@ -88,9 +108,31 @@ window.VenueCollection = Backbone.Collection.extend({
   matchVenuesAndGigs: function(p) { 
 
     const matchingVenues = this.filter((venue) => {
-      return venue.get('gigs').filteredByFormValues(p).length >= 1;
+      return venue.gigs().filteredByFormValues(p).length >= 1;
     });
 
     return new VenueCollection(matchingVenues);
   }
+
+});
+
+
+Comedian.has().many('gigs', {
+  collection: GigCollection,
+  inverse:    'comedians',
+});
+
+Gig.has().many('comedians', {
+  collection: ComedianCollection,
+  inverse:    'gigs',
+});
+
+Gig.has().one('venue', {
+  model:    Venue,
+  inverse: 'gigs',
+});
+
+Venue.has().many('gigs', {
+  collection: GigCollection,
+  inverse:    'venue',
 });

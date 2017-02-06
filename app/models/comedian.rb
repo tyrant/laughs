@@ -589,7 +589,7 @@ class Comedian < ApplicationRecord
         end
         next
 
-      # RRrr! St00pid custom rows.
+      # RRrr! St00pid custom rows. Skip.
       elsif day.empty? || day == "aug 23—27"
         next
 
@@ -631,9 +631,29 @@ class Comedian < ApplicationRecord
   end
 
 
-  # Not written yet
   def Comedian.scrape_milton_jones
-    {}
+    
+    dom = Nokogiri::HTML(open('http://www.miltonjones.com/live'))
+    month_and_year = nil
+
+    gigs_plus_nils = dom.css('#tourdates tr').map do |tr|
+
+      if my = tr.at_css('.subheading.orange')
+        month_and_year = my.text.squish
+        next
+      else
+
+        {
+          date:              "#{tr.at_css('.eventdate').text.squish} #{month_and_year}",
+          venue_deets:       "#{tr.at_css('.venuetitle').text.squish} #{tr.at_css('.eventtown').text.squish}",
+          phone:             tr.at_css('.venuenumber').text.squish,
+          venue_booking_url: tr.at_css('a') ? tr.at_css('a')['href'] : ''
+        }
+      end
+
+    end
+
+    gigs_plus_nils.compact!
   end
 
 
@@ -656,9 +676,33 @@ class Comedian < ApplicationRecord
   end
 
 
-  # Not written yet
+  # Unscrapeable. He doesn't even give venue names. Just city names.
   def Comedian.scrape_rob_beckett
-    {}
+    
+    # dom = Nokogiri::HTML(open("http://www.robbeckettcomedy.com/"))
+
+    # dom.css('#gigListing li').map do |html_gig|
+    #   {
+    #     date: "#{html_gig.at_css('.gigdate')} 2017",
+    #     venue_deets: 
+    #   }
+    # end
+
+  end
+
+
+  def Comedian.scrape_russell_brand
+
+    dom = Nokogiri::HTML(open('http://russellbrand.seetickets.com/tour/russell-brand/list/1/200'))
+
+    dom.css('.g-blocklist-item').map do |html_gig|
+
+      {
+        date:              html_gig.at_css('.text-date').text.squish,
+        venue_deets:       html_gig.at_css('.g-blocklist-sub-text').children[2].text.squish,
+        venue_booking_url: "russellbrand.seetickets.com/#{html_gig.at_css('a')['href']}"
+      }
+    end
   end
 
 

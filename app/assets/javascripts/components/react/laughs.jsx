@@ -9,6 +9,7 @@ class Laughs extends React.Component {
     this.comedians = this.comedians.bind(this);
     this.selectedVenuesAndGigs = this.selectedVenuesAndGigs.bind(this);
     this.gigFilters = this.gigFilters.bind(this);
+    this.bounds = this.bounds.bind(this);
 
     this.handleSearchFormChange = this.handleSearchFormChange.bind(this);
     this.handleOverlayToggleClick = this.handleOverlayToggleClick.bind(this);
@@ -24,7 +25,9 @@ class Laughs extends React.Component {
 
     // And we're off! Set shit up.
     this.state = this.loadStateFromUrl();
-    this.fetchMoreVenues();
+
+    // When our <Map> finishes mounting, it squirts back its state, triggering
+    // this.handleMapChange(), calling this.fetchMoreVenues(). 
   }
 
 
@@ -38,15 +41,19 @@ class Laughs extends React.Component {
   // When querying, we need the comedian IDs, start/end dates.
   // No point in querying the same venues multiple times, either - send a list of
   // their IDs.
-  // Later: lat/lng bounds!
   fetchMoreVenues() {
 
-    let data = {
+    // Grab the venues to be displayed within the map's bounds right now,
+    // and that are already loaded. No point in fetching them a second time -
+    // add their IDs to the 'without' list.
+    const venuesVisibleAndLoaded = this.state.allVenues.within(this.bounds());
+
+    let data = _(this.bounds()).extend({
       comedians:  this.state.selectedComedians.pluck('id'),
       start_date: this.state.startDate,
       end_date:   this.state.endDate,
-      without:    this.state.allVenues.pluck('id'),
-    };
+      without:    venuesVisibleAndLoaded.pluck('id'),
+    });
 
     // Fiddly bit here. On page load, if the current venue is set, we want to 
     // show its gigs - but it's not loaded as a Backbone model until the Ajax
@@ -56,18 +63,24 @@ class Laughs extends React.Component {
       data.with = [this.state.currentVenue];
     }
 
+    this.setState({
+      blurb: 'Loading more gigs...'
+    });
+
     // Attempting to add a JSON object with the same ID twice will get rejected.
     $.getJSON('/venues', data).done((venuesJson) => {
 
       let allVenues = this.state.allVenues;
-      let currentVenue = null;
+      let currentVenue = this.state.currentVenue;
 
       allVenues.add(venuesJson);
 
-      if (this.state.currentVenue != 'none') {
-        currentVenue = allVenues.find(function(v) { return v.id == data.with; });
-      } else {
-        currentVenue = 'none';
+      if (!(this.state.currentVenue instanceof Venue)) {
+        if (this.state.currentVenue != 'none') {
+          currentVenue = allVenues.find(function(v) { return v.id == data.with; });
+        } else {
+          currentVenue = 'none';
+        }
       }
 
       this.setState({
@@ -78,7 +91,7 @@ class Laughs extends React.Component {
   }
 
 
-  // If our search form's comedians list is empty, default to all of them.
+  // Quick shorthand. If our search form's comedians list is empty, default to all of them.
   comedians() {
     if (this.state.selectedComedians.length > 0) {
       return this.state.selectedComedians;
@@ -93,15 +106,16 @@ class Laughs extends React.Component {
   // This function is local venue caching, basically.
   selectedVenuesAndGigs() {
 
-
-    // Return all venues with at least one gig with start > time > end, 
+    // Filter first by venues with at least one gig with start > time > end, 
     // and with gig.comedians including comedians().
     return this.state.allVenues.matchVenuesAndGigs({
       start:     this.state.startDate,
       end:       this.state.endDate,
       comedians: this.comedians(),
       gigFilter: 's',
-    });
+
+    // Filter second by map bounds.
+    }).within(this.bounds());
   }
 
 
@@ -113,6 +127,25 @@ class Laughs extends React.Component {
       comedians: this.comedians(),
       gigFilter: this.state.gigFilter,
     };
+  }
+
+
+  // Another quick shorthand.
+  bounds() {
+    if (this.state.bounds)
+      return {
+        ne_lat: this.state.bounds.getNorthEast().lat(),
+        ne_lng: this.state.bounds.getNorthEast().lng(),
+        sw_lat: this.state.bounds.getSouthWest().lat(),
+        sw_lng: this.state.bounds.getSouthWest().lng(),
+      };
+    else
+      return {
+        ne_lat: 90,
+        ne_lng: 180,
+        sw_lat: -90,
+        sw_lng: -180,
+      };
   }
 
 
@@ -147,13 +180,13 @@ class Laughs extends React.Component {
   // Update our state with the new map values. And round off lat/lng, let's not go nuts.
   handleMapChange(newValues) {
     this.setState({
-      lat:  newValues.lat.toFixed(6),
-      lng:  newValues.lng.toFixed(6),
-      zoom: newValues.zoom,
+      lat:    newValues.center.lat().toFixed(6),
+      lng:    newValues.center.lng().toFixed(6),
+      zoom:   newValues.zoom,
+      bounds: newValues.bounds,
     });
 
-    // When we implement latlngbounds filtering, uncomment this.
-    //this.fetchMoreVenues();
+    this.fetchMoreVenues();
   }
 
 
@@ -199,11 +232,13 @@ class Laughs extends React.Component {
       selectedComedians: new ComedianCollection(), 
       allVenues:         new VenueCollection(), 
       currentVenue:      null,
+      bounds:            null,
       startDate:         moment().unix(),
       endDate:           moment().add(1, 'year').unix(),
       showOverlay:       true,
       tab:               'search',
       gigFilter:         's',
+      blurb:             'Find your favourite gigs!',
     };
 
     let urlData = this.getUrlData();
@@ -212,6 +247,7 @@ class Laughs extends React.Component {
       lat:               urlData.lat ? urlData.lat : defaults.lat,
       lng:               urlData.lng ? urlData.lng : defaults.lng,
       zoom:              urlData.zoom ? urlData.zoom : defaults.zoom,
+      bounds:            defaults.bounds,
       allComedians:      allComedians,
       selectedComedians: urlData.selectedComedians 
                           ? urlData.selectedComedians 
@@ -223,6 +259,7 @@ class Laughs extends React.Component {
       showOverlay:       urlData.showOverlay != null ? urlData.showOverlay : defaults.showOverlay,
       tab:               urlData.tab ? urlData.tab : defaults.tab,
       gigFilter:         urlData.gigFilter || 's',
+      blurb:             defaults.blurb,
     };
   }
 
@@ -300,10 +337,16 @@ class Laughs extends React.Component {
     const selectedVenuesAndGigs = this.selectedVenuesAndGigs();
     const gigFilters = this.gigFilters();
 
+    const gigCounts = selectedVenuesAndGigs.map(v => v.gigs().length);
+    const gigSum = _(gigCounts).reduce((m, n) => { return m+n; }, 0);
+
+    const blurb = "Showing " + selectedVenuesAndGigs.length + " venues, hosting " + gigSum + " gigs";
+
     return (
       <div>
         <Banner 
           handleOverlayToggleClick={this.handleOverlayToggleClick}
+          blurb={blurb}
         />
 
         <div id="everything_else">

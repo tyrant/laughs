@@ -96,6 +96,9 @@ comedians = [{
 }, {
   name: "Rob Beckett",
   mugshot_url: "http://www.colstonhall.org/wp-content/uploads/2013/10/Rob-Beckett-High-Res-20131-e1381919189325-460x300.jpg"
+}, {
+  name: "Russell Brand",
+  mugshot_url: "http://d279m997dpfwgl.cloudfront.net/wp/2014/10/russellbrand.jpg"
 }]
 
 comedians.each do |comedian|

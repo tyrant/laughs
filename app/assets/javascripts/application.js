@@ -24,7 +24,7 @@
 //= require react
 //= require react_ujs
 //= require backbone-1.3.3
-//= require backbone-relational-0.10.0
+//= require supermodel-0.0.4
 //= require URI
 //= require map-clusterer
 
@@ -40,3 +40,6 @@
 //= require components/react/laughs
 
 //= require components/backbone-components
+
+//= require jasmine_examples/Player
+//= require jasmine_examples/Song

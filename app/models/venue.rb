@@ -14,11 +14,45 @@ class Venue < ApplicationRecord
 
   def Venue.filter(params = {})
     venues = locatable.joins(gigs: :comedians).includes(gigs: :comedians)
-    venues = venues.where('comedians.id in (?)', params[:comedians]) unless params[:comedians].blank?
-    venues = venues.where('gigs.time > ?', Time.at(params[:start_date].to_i).to_datetime) unless params[:start_date].blank?
-    venues = venues.where('gigs.time < ?', Time.at(params[:end_date].to_i).to_datetime) unless params[:end_date].blank?
-    venues = venues.where('venues.id not in (?)', params[:without]) unless params[:without].blank?
-    venues = venues.or(venues.where('venues.id in (?)', params[:with])) unless params[:with].blank?
+
+    if params[:comedians].present?
+      venues = venues.where('comedians.id in (?)', params[:comedians])
+    end
+
+    if params[:start_date].present?
+      venues = venues.where('gigs.time > ?', Time.at(params[:start_date].to_i).to_datetime) 
+    end
+
+    if params[:end_date].present?
+      venues = venues.where('gigs.time < ?', Time.at(params[:end_date].to_i).to_datetime)
+    end
+
+    if params[:without].present?
+      venues = venues.where('venues.id not in (?)', params[:without])
+    end
+
+    if params[:ne_lat].present?
+      venues = venues.where('venues.latitude < ?', params[:ne_lat])
+    end
+
+    if params[:sw_lat].present?
+      venues = venues.where('venues.latitude > ?', params[:sw_lat])
+    end
+
+    if params[:ne_lng].present?
+      venues = venues.where('venues.longitude < ?', params[:ne_lng])
+    end
+
+    if params[:sw_lng].present?
+      venues = venues.where('venues.longitude > ?', params[:sw_lng])
+    end
+
+    # If any venues IDs included here, we'd like to include them in the result set
+    # regardless of whether they meet the above conditions.
+    if params[:with].present?
+      venues = venues.or(venues.where('venues.id in (?)', params[:with]))
+    end
+       
     venues
   end
 
