@@ -13,46 +13,46 @@ class Venue < ApplicationRecord
 
 
   def Venue.filter(params = {})
+
     venues = locatable.joins(gigs: :comedians).includes(gigs: :comedians)
 
     if params[:comedians].present?
       venues = venues.where('comedians.id in (?)', params[:comedians])
     end
 
-    if params[:start_date].present?
-      venues = venues.where('gigs.time > ?', Time.at(params[:start_date].to_i).to_datetime) 
-    end
+    if params[:start_date].present? && params[:end_date].present?
+      from = Time.at(params[:start_date].to_i).to_datetime
+      to = Time.at(params[:end_date].to_i).to_datetime
 
-    if params[:end_date].present?
-      venues = venues.where('gigs.time < ?', Time.at(params[:end_date].to_i).to_datetime)
+      venues = venues.where('gigs.time >= ? and gigs.time <= ?', from, to)  
     end
 
     if params[:without].present?
       venues = venues.where('venues.id not in (?)', params[:without])
     end
 
-    if params[:ne_lat].present?
-      venues = venues.where('venues.latitude < ?', params[:ne_lat])
+    if params[:sw_lat].present? && params[:ne_lat].present?
+      venues = venues.where('venues.latitude > ? and venues.latitude < ?', params[:sw_lat], params[:ne_lat])
     end
 
-    if params[:sw_lat].present?
-      venues = venues.where('venues.latitude > ?', params[:sw_lat])
-    end
+    if params[:sw_lng].present? && params[:ne_lng].present?
 
-    if params[:ne_lng].present?
-      venues = venues.where('venues.longitude < ?', params[:ne_lng])
-    end
+      # Normal
+      if ne_lng > sw_lng
+        venues = venues.where('venues.longitude > ? and venues.longitude < ?', params[:sw_lng], params[:ne_lng])
 
-    if params[:sw_lng].present?
-      venues = venues.where('venues.longitude > ?', params[:sw_lng])
+      # Straddling date line
+      else
+        venues = venues.where('venues.longitude > ? or venues.longitude < ?', params[:sw_lng], params[:ne_lng])
+      end
     end
 
     # If any venues IDs included here, we'd like to include them in the result set
     # regardless of whether they meet the above conditions.
     if params[:with].present?
-      venues = venues.or(venues.where('venues.id in (?)', params[:with]))
+      venues = venues.or(Venue.joins(gigs: :comedians).includes(gigs: :comedians).where('venues.id in (?)', params[:with]))
     end
-       
+
     venues
   end
 

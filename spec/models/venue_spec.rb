@@ -103,36 +103,40 @@ describe Venue do
 
       describe "start timestamp; " do
 
+        # All examples: end_date is 10 days ahead, ahead of all gigs here.
+
         it "returns venue 3 when start_date is 5.5 days ahead" do
-          venues = Venue.filter start_date: (Time.now + 5.5.days).to_i
+          venues = Venue.filter start_date: (Time.now + 5.5.days).to_i, end_date: (Time.now + 10.days).to_i
           expect(venues).to eq [v3]
         end 
 
         it "returns venues 2 and 3 when start_date is 3.5 days ahead" do
-          venues = Venue.filter start_date: (Time.now + 3.5.days).to_i
+          venues = Venue.filter start_date: (Time.now + 3.5.days).to_i, end_date: (Time.now + 10.days).to_i
           expect(venues).to eq [v2, v3]
         end
 
         it "returns all three venues when start_date is 2 days past" do
-          venues = Venue.filter start_date: (Time.now - 2.days).to_i
+          venues = Venue.filter start_date: (Time.now - 2.days).to_i, end_date: (Time.now + 10.days).to_i
           expect(venues).to eq [v1, v2, v3]
         end
       end
 
       describe "end timestamp; " do
 
+        # All examples: start_date is 10 days ago, behind all gigs here.
+
         it "returns venue 1 when end_date is 2.5 days ahead" do
-          venues = Venue.filter end_date: (Time.now + 2.5.days).to_i
+          venues = Venue.filter end_date: (Time.now + 2.5.days).to_i, start_date: (Time.now - 10.days).to_i
           expect(venues).to eq [v1]
         end 
 
         it "returns venues 1 and 2 when end_date is 4.5 days ahead" do
-          venues = Venue.filter end_date: (Time.now + 4.5.days).to_i
+          venues = Venue.filter end_date: (Time.now + 4.5.days).to_i, start_date: (Time.now - 10.days).to_i
           expect(venues).to eq [v1, v2]
         end
 
         it "returns all three venues when end_date is 7 days ahead" do
-          venues = Venue.filter end_date: (Time.now + 7.days).to_i
+          venues = Venue.filter end_date: (Time.now + 7.days).to_i, start_date: (Time.now - 10.days).to_i
           expect(venues).to eq [v1, v2, v3]
         end
       end
@@ -146,7 +150,6 @@ describe Venue do
 
         it "returns v3 when the filter otherwise excludes v3" do
           venues = Venue.filter comedians: [c1.id], with: [v3.id]
-          ap venues.to_sql
           expect(venues).to include v3
         end
       end

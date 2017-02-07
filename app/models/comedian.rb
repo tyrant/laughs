@@ -700,7 +700,7 @@ class Comedian < ApplicationRecord
       {
         date:              html_gig.at_css('.text-date').text.squish,
         venue_deets:       html_gig.at_css('.g-blocklist-sub-text').children[2].text.squish,
-        venue_booking_url: "russellbrand.seetickets.com/#{html_gig.at_css('a')['href']}"
+        venue_booking_url: "http://russellbrand.seetickets.com#{html_gig.at_css('a')['href']}"
       }
     end
   end

@@ -3,6 +3,7 @@ function FAQs() {
   // Just static HTML, no state or computation here.
   return (
     <div className="panel-group" id="faq_accordion" role="tablist" aria-multiselectable="true">
+
       <div className="panel panel-default">
         <div className="panel-heading" role="tab" id="headingOne">
           <h4 className="panel-title">
@@ -21,6 +22,23 @@ function FAQs() {
             </p>
             <p>
               Then again, I did write these words way back in January 2017. In whatever Star Trek future you're reading this in, maybe she's started touring again. 
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="panel panel-default">
+        <div className="panel-heading" role="tab" id="headingFour">
+          <h4 className="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#faq_accordion" href="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+              My favourite comedian <em>is</em> on here, but they have no gigs! What gives?
+            </a>
+          </h4>
+        </div>
+        <div id="collapseFour" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div className="panel-body">
+            <p>
+              One of two reasons: I've either not got around to writing their website-parsing scripts, or I've attempted to and it turns out their site is unparseable. <a href="http://www.robbeckettcomedy.com/">Rob Beckett's site</a> is such a website. Looks great! Until you realise each gig listing just mentions the city and not the venue. You can't automatically get each venue's exact location without major fiddliness.
             </p>
           </div>
         </div>
@@ -81,16 +99,16 @@ function FAQs() {
               Consider this search: <a href="scicencethisbitchup.com/?v=none&g=s&t=search&c=22&a=-33.502522&n=101.506165&z=3&o=t&s=1487674800&e=1487761200">scicencethisbitchup.com/?v=none&g=s&t=search&c=22&a=-33.502522&n=101.506165&z=3&o=t&s=1487674800&e=1487761200</a>. If I've got my data right, it shows exactly one of his gigs - located in Perth, Australia. If you check the webpage I've lovingly swiped that gig, and others, off, <a href="http://www.omidnoagenda.com/omiddjalilievent.html">http://www.omidnoagenda.com/omiddjalilievent.html</a>, you'll see his February 22 2017 gig is indeed in "Perth" - but it's his UK tour. This Perth is in Scotland. My web scripts have to iterate over his page, you see, line by line, and the only content I'm able to relay to Google's Place APIs is "PERTH CONCERT HALL". 
             </p>
             <p>
-              Aspiring script kiddies will no doubt retort "but why cant u append UNITED KINGDOM fr each row to ur API calls?" Fair point, I could - but that'd then muck up the December 2016 international gigs, further up the page. Now could I write yet another test to distinguish local gigs from international? Yyyyes - but when I write a script to extract a site's precious gig info, it's got to be automatic. When Omid adds another gig table row, my script has to read and copy it into my server database, automatically, accurately, without me even knowing about it. And when the raw data is this clunky, that just ain't gonna happen.
+              Aspiring script kiddies will no doubt retort "but why cant u append UNITED KINGDOM fr each row to ur API calls?" Fair point, I could - but that'd then muck up the December 2016 international gigs, further up the page. Now, could I write yet another test to distinguish local gigs from international? Yyyyes - but, when I write a script to extract a site's precious gig info, it's got to be automatic. When Omid adds a gig to his page, my script has to read and copy that gig into my server database, automatically, accurately, without me having to keep tabs on it. And when the raw data is this clunky, that just ain't gonna happen.
             </p>
             <p>
-              I've spent all morning battling Omid's quirks. It goes on and on and friggin' <em>on</em>. I'll do my best to work around them, but at some point you just have to say screw it. I've sunk enough time polishing your turd. You write crap gig info, I'll display your crap gig info. Your groupies shall toddle to Australia.
+              I've spent all morning battling Omid's quirks. I'll do my best to work around them, but at some point you just have to say screw it. I've sunk enough time polishing your turd. You write crap gig info, I'll display that crap gig info. Your groupies shall toddle to Australia.
             </p>
             <p>
-              But ... I honestly don't intend that to sound as rude as it does! Sorry, Omid! I doubt that (1) you're a programmer, and (2), you update your own site. You and other non-techies might look at the events page and think "It's not <em>that</em> bad, is it? It's in a ... <em>fairly</em> well formatted table, decent structure, what's the problem?"
+              But ... I honestly don't intend that to sound as rude as it does! Sorry, Omid! I doubt that (1) you update your own site, or that (2) you're a techie. You and other non-techies might look at the events page and think "It's not <em>that</em> bad, is it? It's in a ... <em>fairly</em> well formatted table, decent structure, what's the problem?"
             </p>
             <p>
-              Fair points. Problem is, this one page has a zillion fiddly edge cases. I've only mentioned a few above. There are some real beauties amongst the websites of today's comics, though. Check out Greg Davies's page. http://gregdavies.co.uk/ Phwoar.
+              Fair points. Problem is, this one page has a zillion fiddly edge cases. I've only mentioned a few above. Other websites are far better, though. There are some real beauties out there. Check out <a href="http://gregdavies.co.uk/">Greg Davies's page</a>. Phwoar.
             </p>
             <p>
               And it could be worse, too. Look at Sara Pascoe's page: <a href="http://www.sarapascoe.com/gigs.html">http://www.sarapascoe.com/gigs.html</a> What's wrong with it, you may ask? Looks lovely! At face value why yes it does, until techies like me start digging into it - and turns out she's using some third-party embedded calendar app called Tockify. It's an entire Angular app. (For non-techies, Angular is a technical term meaning "overengineered"). And it actively fights back against being parsed. Hell of a shame, because I do love Sara's stuff, but I can't add her gigs to my site.

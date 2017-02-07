@@ -340,7 +340,7 @@ class Laughs extends React.Component {
     const gigCounts = selectedVenuesAndGigs.map(v => v.gigs().length);
     const gigSum = _(gigCounts).reduce((m, n) => { return m+n; }, 0);
 
-    const blurb = "Showing " + selectedVenuesAndGigs.length + " venues, hosting " + gigSum + " gigs";
+    const blurb = "Showing " + selectedVenuesAndGigs.length + " venues and " + gigSum + " gigs";
 
     return (
       <div>
