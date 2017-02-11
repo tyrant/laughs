@@ -14,7 +14,7 @@ class Venue < ApplicationRecord
 
   def Venue.filter(params = {})
 
-    venues = locatable.joins(gigs: :comedians).includes(gigs: :comedians)
+    venues = locatable.joins(gigs: { spots: :comedian }).includes(gigs: { spots: :comedian })
 
     if params[:comedians].present?
       venues = venues.where('comedians.id in (?)', params[:comedians])
@@ -38,7 +38,7 @@ class Venue < ApplicationRecord
     if params[:sw_lng].present? && params[:ne_lng].present?
 
       # Normal
-      if ne_lng > sw_lng
+      if params[:ne_lng] > params[:sw_lng]
         venues = venues.where('venues.longitude > ? and venues.longitude < ?', params[:sw_lng], params[:ne_lng])
 
       # Straddling date line
@@ -47,17 +47,17 @@ class Venue < ApplicationRecord
       end
     end
 
-    # If any venues IDs included here, we'd like to include them in the result set
-    # regardless of whether they meet the above conditions.
+    # If any venues IDs are included here, we'd like to also include them 
+    # in the result set regardless of whether they meet the above conditions.
     if params[:with].present?
-      venues = venues.or(Venue.joins(gigs: :comedians).includes(gigs: :comedians).where('venues.id in (?)', params[:with]))
+      venues = venues.or(Venue.joins(gigs: { spots: :comedian }).includes(gigs: { spots: :comedian }).where('venues.id in (?)', params[:with]))
     end
 
     venues
   end
 
 
-  def Venue.find_or_create_by_gig_deets(gig)
+  def Venue.find_or_create_by(gig)
 
     # We really, really don't want to hit the Places API every single goddamn time
     # we check a venue's uniqueness. Chew up our quota in no time.
@@ -68,20 +68,21 @@ class Venue < ApplicationRecord
     # for the same venue. We don't want to create multiple venue objects that turn out
     # to have the same place ID. So if finding an existing venue from venue_deets
     # doesn't work, hit up the Places API, get a place ID, and query for that.
-    unless venue = Venue.find_by_deets(gig[:venue_deets])
+    unless venue = Venue.where(deets: gig[:venue_deets]).first
 
       # No luck! Hit up the Places API. If GP returns no results, or throws a
       # query limit exception, we still want the venue saved. 
       begin
         place = GP.first_plausible_spot(gig[:venue_deets])
-      rescue
+      rescue Exception => e
         place = nil
       end
 
       # If we get a place result, query for a venue in our database based on place ID.
-      venue = Venue.find_by_google_place_id(place.place_id) if place.present?
-      unless venue.present?
+      if place.present? and venue = Venue.find_by_google_place_id(place.place_id) 
+        created = false
 
+      else
         # No result there either, eh? Fine. Create the frickin' thing. 
         venue = Venue.create({
           name:             place.present? ? place.name : nil,        
@@ -92,10 +93,15 @@ class Venue < ApplicationRecord
           phone:            gig[:phone],
           deets:            gig[:venue_deets]
         })
+        created = true
+
       end
+
+    else 
+      created = false
     end
 
-    venue
+    return venue, created
   end
 
 
@@ -128,6 +134,7 @@ class Venue < ApplicationRecord
       latitude:         self.latitude,
       longitude:        self.longitude,
       readable_address: self.readable_address,
+      phone:            self.phone,
       gigs:             self.gigs.as_json(params)
     }
   end

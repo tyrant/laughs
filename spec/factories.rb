@@ -5,6 +5,9 @@ FactoryGirl.define do
     mugshot { File.new("#{Rails.root}/spec/handsomebastard.jpg") }
   end
 
+  factory :spot do
+  end
+
   factory :gig do
     time { Faker::Time.between(DateTime.now, DateTime.now + 2.years) }
     sequence(:venue_booking_url) {|n| "theatre.co.uk?gig=#{n}" }
@@ -23,6 +26,7 @@ FactoryGirl.define do
 
     phone { Faker::PhoneNumber.phone_number }
     deets 'Down by the docks'
+
   end
 
 end

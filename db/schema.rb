@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170203201539) do
+ActiveRecord::Schema.define(version: 20170208224041) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,13 +25,6 @@ ActiveRecord::Schema.define(version: 20170203201539) do
     t.datetime "mugshot_updated_at"
   end
 
-  create_table "comedians_gigs", id: false, force: :cascade do |t|
-    t.integer "gig_id"
-    t.integer "comedian_id"
-    t.index ["comedian_id"], name: "index_comedians_gigs_on_comedian_id", using: :btree
-    t.index ["gig_id"], name: "index_comedians_gigs_on_gig_id", using: :btree
-  end
-
   create_table "gigs", force: :cascade do |t|
     t.datetime "time"
     t.integer  "venue_id"
@@ -41,6 +34,16 @@ ActiveRecord::Schema.define(version: 20170203201539) do
     t.string   "ticketmaster_booking_url"
     t.index ["time"], name: "index_gigs_on_time", using: :btree
     t.index ["venue_id"], name: "index_gigs_on_venue_id", using: :btree
+  end
+
+  create_table "spots", force: :cascade do |t|
+    t.integer  "gig_id"
+    t.integer  "comedian_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.index ["comedian_id"], name: "index_spots_on_comedian_id", using: :btree
+    t.index ["gig_id", "comedian_id"], name: "index_spots_on_gig_id_and_comedian_id", using: :btree
+    t.index ["gig_id"], name: "index_spots_on_gig_id", using: :btree
   end
 
   create_table "venues", force: :cascade do |t|

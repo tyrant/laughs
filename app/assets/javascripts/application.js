@@ -27,7 +27,7 @@
 //= require supermodel-0.0.4
 //= require URI
 //= require map-clusterer
-
+//= require sinon-1.17.6
 
 // My shite
 

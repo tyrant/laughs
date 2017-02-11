@@ -2,7 +2,9 @@ class Comedian < ApplicationRecord
 
   # Each comedian has many gigs; each gig has many comedians. 
   # This allows for multiple comedians on the same bill, you see.
-  has_and_belongs_to_many :gigs
+
+  has_many :spots
+  has_many :gigs, through: :spots
   has_many :venues, through: :gigs
 
   has_attached_file :mugshot, styles: { thumb: "100x100#" }
@@ -16,7 +18,7 @@ class Comedian < ApplicationRecord
   scope :ordered_by_surname, -> { order("right(name, strpos(reverse(name), ' ')) asc") }
 
 
-  def as_json(params={})
+  def as_json(params = {})
     {
       id:          self.id,
       name:        self.name,
@@ -625,9 +627,49 @@ class Comedian < ApplicationRecord
   end
 
 
-  # Not written yet 
+  # Another horrendous bastard.
   def Comedian.scrape_stewart_lee
-    {}
+    
+    dom = Nokogiri::HTML(open('http://www.stewartlee.co.uk/live-dates/'))
+    month_and_year = nil
+
+    lines = []
+    dom.css('.linkbox').each do |month|
+
+      if my = month.at_css('h6')
+        month_and_year = my.text.squish
+      end
+
+      month.css('p').each do |p|
+
+        p.children.to_a.split{|tag| tag.name == 'br' }.each do |line|
+          lines.push({
+            month_and_year: month_and_year,
+            line: Nokogiri::HTML::fragment(line.map {|l| l.to_html }.join)
+          })
+        end
+
+      end
+    end
+
+    lines.map do |line|
+
+      stripped = line[:line]
+      stripped = stripped.text.squish
+      shit_to_remove = ['Content Provider', 'TICKETS', 'SOLD OUT', 'ON SALE SOON', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+      shit_to_remove.each do |shit|
+        stripped.gsub! shit, ''
+      end
+
+      stripped = stripped.split('–').select{|s| s.to_i == 0 }.join
+
+      {
+        date:              DateTime.parse("#{line[:month_and_year]} #{line[:line].text}").to_s,
+        venue_deets:       stripped,
+        venue_booking_url: line[:line].at_css('a')['href']
+      }
+    end
   end
 
 
@@ -706,39 +748,31 @@ class Comedian < ApplicationRecord
   end
 
 
-
   # Receive a whole bunch of freshly scraped gigs. If they don't exist, create them.
   def create_gigs(gigs = {})
 
-    created_gig_count = 0
+    created = { venues: 0, gigs: 0, spots: 0 }
 
-    gigs.each do |gig|
+    gigs.each do |input_gig|
 
       # First, for each of our gigs, we need a venue to host it at. Query our Venues
       # table for it, or if it doesn't exist, create it.
-      venue = Venue.find_or_create_by_gig_deets(gig)
+      venue, venue_created = Venue.find_or_create_by(input_gig)
+      created[:venues] += 1 if venue_created
 
       # Great. Now we've got our found/created venue. Next, we query for the existence
       # of our gig too.
-      time = DateTime.parse(gig[:date])
+      gig, gig_created = Gig.find_or_create_by(input_gig, venue)
+      created[:gigs] += 1 if gig_created
 
-      unless Gig.where(venue: venue, time: time).first
-
-        # Doesn't exist. Make it.
-        Gig.create({
-          comedians:                [self],
-          venue:                    venue,
-          time:                     time,
-          venue_booking_url:        gig[:venue_booking_url],
-          ticketmaster_booking_url: gig[:ticketmaster_booking_url]
-        })
-
-        created_gig_count += 1
-      end
+      # And finally, spots.
+      spot, spot_created = Spot.find_or_create_by(self, gig)
+      created[:spots] += 1 if spot_created
     end
 
-    # And we're done! For kewl logging purposes, return our created gig count.
-    created_gig_count
+    # And we're done! For kewl logging purposes, return our created counts.
+    created
   end
 
 end
+

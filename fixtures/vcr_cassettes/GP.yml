@@ -1,0 +1,178 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://maps.googleapis.com/maps/api/place/textsearch/json?key=AIzaSyDs_RUMrFDZVJ4lmbv9ssFUAoWld5lf--4&language=&query=Tunbridge%20Wells,%20Assembly%20Halls%20Theatre&rankby=
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 07 Feb 2017 21:32:20 GMT
+      Expires:
+      - Tue, 07 Feb 2017 21:37:20 GMT
+      Cache-Control:
+      - public, max-age=300
+      Vary:
+      - Accept-Language
+      Server:
+      - pablo
+      Content-Length:
+      - '955'
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - SAMEORIGIN
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="35,34"
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+           "html_attributions" : [],
+           "results" : [
+              {
+                 "formatted_address" : "Crescent Rd, Royal Tunbridge Wells TN1 2LU, United Kingdom",
+                 "geometry" : {
+                    "location" : {
+                       "lat" : 51.13234889999999,
+                       "lng" : 0.2644018
+                    },
+                    "viewport" : {
+                       "northeast" : {
+                          "lat" : 51.13243135,
+                          "lng" : 0.26442805
+                       },
+                       "southwest" : {
+                          "lat" : 51.13226034999999,
+                          "lng" : 0.2643230500000001
+                       }
+                    }
+                 },
+                 "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png",
+                 "id" : "ad6c61f124792db8b07d10de5ffb9f3eb949d360",
+                 "name" : "Assembly Hall Theatre",
+                 "photos" : [
+                    {
+                       "height" : 2988,
+                       "html_attributions" : [
+                          "\u003ca href=\"https://maps.google.com/maps/contrib/115366646140575718951/photos\"\u003eDavid Thirlwell\u003c/a\u003e"
+                       ],
+                       "photo_reference" : "CoQBdwAAAEVvlPyF7766-xLgPb2-MnmNs6yWo8LaiYiSu1NZH_ApjTifagGW8rG8b_mEAUfaEutnH5ebHMCOgSoXJay0_9WTeFiuZKwwp0uZ32fQrfABJVUAqdC-NxdOKu5SEQPNMKLw02JyBCmNRsd5bjExjB6kupCHqCfDWq4kyXWt5NyuEhAxAAu8xIGUjn0Lte1OuwJUGhTiW3LaKXoc-seTemlOzoCOC9TttQ",
+                       "width" : 5312
+                    }
+                 ],
+                 "place_id" : "ChIJTbF2KTJE30cRzF7_P7QNC1k",
+                 "rating" : 4.3,
+                 "reference" : "CmRRAAAAjUJy3TPrFlV2wGuOc7wT39hxcoUoNSv0A_FonF191d3OUNGxK8_NnUdWc81_2JriXHGnUUGy9vxnBSMO1_TrzoUJTjtn30w1GLOx83G_HtJlD5u3a7-Z7AGc4M2_U9F_EhDde2HdVE6pn78YnjOddJB9GhSKxbzpuvTs4s7LU6ly3gnnwZiTdA",
+                 "types" : [ "point_of_interest", "establishment" ]
+              }
+           ],
+           "status" : "OK"
+        }
+    http_version: 
+  recorded_at: Tue, 07 Feb 2017 21:33:12 GMT
+- request:
+    method: get
+    uri: https://maps.googleapis.com/maps/api/place/textsearch/json?key=AIzaSyDs_RUMrFDZVJ4lmbv9ssFUAoWld5lf--4&language=&query=Guildhall%20Southampton&rankby=
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 10 Feb 2017 09:54:12 GMT
+      Expires:
+      - Fri, 10 Feb 2017 09:59:12 GMT
+      Cache-Control:
+      - public, max-age=300
+      Vary:
+      - Accept-Language
+      Server:
+      - pablo
+      Content-Length:
+      - '990'
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - SAMEORIGIN
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="35,34"
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+           "html_attributions" : [],
+           "results" : [
+              {
+                 "formatted_address" : "W Marlands Rd, Southampton SO14 7LP, United Kingdom",
+                 "geometry" : {
+                    "location" : {
+                       "lat" : 50.90799879999999,
+                       "lng" : -1.4061987
+                    },
+                    "viewport" : {
+                       "northeast" : {
+                          "lat" : 50.90809834999999,
+                          "lng" : -1.40606705
+                       },
+                       "southwest" : {
+                          "lat" : 50.90770015000001,
+                          "lng" : -1.40659365
+                       }
+                    }
+                 },
+                 "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png",
+                 "id" : "0c8f0e43ccbed0de9ff4e8a502ec3413ea87cddc",
+                 "name" : "O2 Guildhall",
+                 "opening_hours" : {
+                    "exceptional_date" : [],
+                    "open_now" : true,
+                    "weekday_text" : []
+                 },
+                 "photos" : [
+                    {
+                       "height" : 2988,
+                       "html_attributions" : [
+                          "\u003ca href=\"https://maps.google.com/maps/contrib/114737916064437837222/photos\"\u003ePeter Gibbs\u003c/a\u003e"
+                       ],
+                       "photo_reference" : "CoQBdwAAAObxGdfnBrIzgv2gV3LGZwdqzc-JbC7HkLqh8zCkxTUuE9UpprTYH8IplvoNLKBdzBkZon5xUVjhkq1h5k8S7QIgYJkMsLB3lB3LnEG7GUibpVBFuDmTNahJq4ceZpviDNOZpr4fsOLUguJTazjtBFYy0aHLh0dGYhj4-ojKFxWHEhAn_TthAPE-yNYBsFOGfMmnGhTvOCAugoPAGOkYhKel9UMaZtGoRA",
+                       "width" : 5312
+                    }
+                 ],
+                 "place_id" : "ChIJb9gysLF2dEgR81lqnq80s_Q",
+                 "rating" : 4,
+                 "reference" : "CmRSAAAAs519o6iOiueaaYWEglGoQlpTjpwwAx0bpMUZcVo6yGfknET817fSGXuA_Go3-RsBdOtB4UuLTgR-V-pO6KEJ_xVu7ePlxa7_dPIQw8JJz_xvp_vcbukUlV1ymNSZBVBrEhBUwzS4A6kBe54ecvdSQktiGhTRb79UHA8SB6KhPzft0zUjravFXA",
+                 "types" : [ "point_of_interest", "establishment" ]
+              }
+           ],
+           "status" : "OK"
+        }
+    http_version: 
+  recorded_at: Fri, 10 Feb 2017 09:55:05 GMT
+recorded_with: VCR 3.0.3

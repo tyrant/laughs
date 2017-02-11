@@ -22,7 +22,8 @@ class Map extends React.Component {
 
     // Fire up the clusterer.
     this.clusterer = new MarkerClusterer(this.map, [], {
-      imagePath: '/m'
+      imagePath: '/m',
+      gridSize:  40,
     });
 
     // Fire up a few event listeners.

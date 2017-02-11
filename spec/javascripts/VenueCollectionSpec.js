@@ -1,49 +1,53 @@
 describe("VenueCollection", () => {
 
-
   // within() takes four parameters: sw_lat, sw_lng, ne_lat, ne_lng, which
   // trace out a geo-rectangle. It returns all venues within that rectangle.
   describe("#within", () => {
 
-    var venues;
+    let venues;
 
-    // Create a nice handy testable 3x3 grid of Venues.
+    // Create a nice handy testable 3x3 grid of Venues, straddling
+    // the international date line.
     beforeAll(() => {
       venues = new VenueCollection([
-        { latitude: 1, longitude: 1 },
-        { latitude: 2, longitude: 1 },
-        { latitude: 3, longitude: 1 },
-        { latitude: 1, longitude: 2 },
-        { latitude: 2, longitude: 2 },
-        { latitude: 3, longitude: 2 },
-        { latitude: 1, longitude: 3 },
-        { latitude: 2, longitude: 3 },
-        { latitude: 3, longitude: 3 },
+        { latitude: 10, longitude: 165 },
+        { latitude: 20, longitude: 165 },
+        { latitude: 30, longitude: 165 },
+        { latitude: 10, longitude: 175 },
+        { latitude: 20, longitude: 175 },
+        { latitude: 30, longitude: 175 },
+        { latitude: 10, longitude: -175 },
+        { latitude: 20, longitude: -175 },
+        { latitude: 30, longitude: -175 },
       ]);
     });
 
-    it("returns four venues within bounds (0.5, 0.5), (2.5, 2.5)", () => {
+    it("returns four venues within bounds (5, 160), (25, 180)", () => {
 
       let bounds = {
-        sw_lat: 0.5,
-        sw_lng: 0.5,
-        ne_lat: 2.5,
-        ne_lng: 2.5,
+        sw_lat: 5,
+        sw_lng: 160,
+        ne_lat: 25,
+        ne_lng: 180,
       };
 
       expect(venues.within(bounds).length).toBe(4);
     });
 
-    it("returns three venues withins bounds (2.5, 0.5), (3.5, 3.5)", () => {
+    it("returns three venues within IDL-straddling bounds (5, 160), (15, -170)", () => {
 
       let bounds = {
-        sw_lat: 2.5,
-        sw_lng: 0.5,
-        ne_lat: 3.5,
-        ne_lng: 3.5,
+        sw_lat: 5,
+        sw_lng: 160,
+        ne_lat: 15,
+        ne_lng: -170,
       };
 
       expect(venues.within(bounds).length).toBe(3);
+    });
+
+    afterAll(() => {
+      venues.reset();
     });
   });
 
@@ -61,17 +65,13 @@ describe("VenueCollection", () => {
     beforeAll(() => {
 
       comedians = new ComedianCollection([{
-        id: 0,
-        name: 'one',
+        id: 0, name: 'one',
       }, {
-        id: 1,
-        name: 'two',
+        id: 1, name: 'two',
       }, {
-        id: 2,
-        name: 'three',
+        id: 2, name: 'three',
       }, {
-        id: 3,
-        name: 'four',
+        id: 3, name: 'four',
       }]);
 
       venues = new VenueCollection([{
@@ -134,6 +134,11 @@ describe("VenueCollection", () => {
       }]);
     });
 
+    afterAll(() => {
+      venues.reset();
+      comedians.reset();
+    });
+
     describe("matching start and end times", () => {
 
       it("returns two venues when start==2.5 days and end==4.5 days", () => {
@@ -156,7 +161,7 @@ describe("VenueCollection", () => {
           end:       moment().add(180, 'hours').unix(),
           gigFilter: 's',
         });
-        console.log(venues.at(0).gigs().at(0).comedians())
+
         expect(results.length).toBe(2);
       })
 

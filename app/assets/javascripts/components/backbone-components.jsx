@@ -1,5 +1,7 @@
 var Comedian = Supermodel.Model.extend();
 
+var Spot = Supermodel.Model.extend();
+
 var Gig = Supermodel.Model.extend({
 
   toJSON: function() {
@@ -28,6 +30,13 @@ var ComedianCollection = Backbone.Collection.extend({
     return Comedian.create(attrs, options);
   }
 });
+
+var SpotCollection = Backbone.Collection.extend({
+
+  model: function(attrs, options) {
+    return Spot.create(attrs, options);
+  }
+})
 
 var GigCollection = Backbone.Collection.extend({
 
@@ -61,7 +70,9 @@ var GigCollection = Backbone.Collection.extend({
 
         let comediansMatch = null;
         if (p.comedians) {
-          const gigComedianIds = gig.comedians().pluck('id');
+          const comedians = gig.spots().map((s) => s.comedian());
+          const gigComedianIds = _(comedians).pluck('id');
+
           comediansMatch = _.intersection(comedianIds, gigComedianIds).length > 0;
         } else {
           comediansMatch = true;
@@ -94,7 +105,18 @@ var VenueCollection = Backbone.Collection.extend({
       const lat = venue.get('latitude');
       const lng = venue.get('longitude');
 
-      return p.sw_lat < lat && lat < p.ne_lat && p.sw_lng < lng && lng < p.ne_lng;
+      const matchesLat = p.sw_lat < lat && lat < p.ne_lat;
+
+      // Allow for straddling the international date line!
+      let matchesLng = false;
+      if (p.sw_lng < p.ne_lng)
+        matchesLng = p.sw_lng < lng && lng < p.ne_lng;
+      else 
+        matchesLng = p.sw_lng < lng || lng < p.ne_lng;
+
+      //console.debug('lat=', lat, 'lng=', lng, 'sw_lat=', p.sw_lat, 'sw_lng=', p.sw_lng, 'ne_lat=', p.ne_lat, 'ne_lng=', p.ne_lng, 'matchesLat=', matchesLat, 'matchesLng=', matchesLng, 'matches=', matchesLat && matchesLng)
+
+      return matchesLat && matchesLng;
     });
 
     return new VenueCollection(matchingVenues);
@@ -117,14 +139,24 @@ var VenueCollection = Backbone.Collection.extend({
 });
 
 
-Comedian.has().many('gigs', {
-  collection: GigCollection,
-  inverse:    'comedians',
+Comedian.has().many('spots', {
+  collection: SpotCollection,
+  inverse:    'comedian',
 });
 
-Gig.has().many('comedians', {
-  collection: ComedianCollection,
-  inverse:    'gigs',
+Spot.has().one('comedian', {
+  model:   Comedian,
+  inverse: 'spots'
+});
+
+Spot.has().one('gig', {
+  model:   Gig,
+  inverse: 'spots'
+});
+
+Gig.has().many('spots', {
+  collection: SpotCollection,
+  inverse:    'gig',
 });
 
 Gig.has().one('venue', {

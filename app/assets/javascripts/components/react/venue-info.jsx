@@ -15,11 +15,14 @@ class VenueInfo extends React.Component {
 
 
   getGigs() {
-    return this.props
+
+    const gigs = this.props
       .currentVenue
       .gigs()
       .filteredByFormValues(this.props.gigFilters)
       .sortedByTime();
+    console.log(gigs.at(0).spots());
+    return gigs;
   }
 
   render() {
@@ -59,8 +62,8 @@ class VenueInfo extends React.Component {
             <ul>
               {this.getGigs().map((gig) =>
                 <li key={gig.id} data-gig-id={gig.id}>
-                  <img width="100" height="100" src={gig.comedians().at(0).get('mugshot_url')} />
-                  {gig.comedians().at(0).get('name')}<br />
+                  <img width="100" height="100" src={gig.spots().at(0).comedian().get('mugshot_url')} />
+                  {gig.spots().at(0).comedian().get('name')}<br />
                   {moment(gig.get('time')*1000).format('Do MMMM YYYY')}<br />
                   <a className="btn btn-lg btn-success" href={gig.bookingUrl()}>Buy Tickets</a>
                 </li>
