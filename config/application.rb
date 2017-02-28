@@ -18,6 +18,6 @@ module Laughs
 
     config.active_job.queue_adapter = :delayed_job
 
-    config.autoload_paths << "#{Rails.root}/lib"
+    config.eager_load_paths << "#{Rails.root}/lib"
   end
 end
