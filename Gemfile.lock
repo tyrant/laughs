@@ -72,10 +72,6 @@ GEM
     capistrano-bundler (1.2.0)
       capistrano (~> 3.1)
       sshkit (~> 1.2)
-    capistrano-delayed-job (1.1.0)
-      capistrano (>= 3.1)
-      daemons (>= 1.1)
-      sshkit (>= 1.2.0)
     capistrano-harrow (0.5.3)
     capistrano-passenger (0.2.0)
       capistrano (~> 3.0)
@@ -329,7 +325,6 @@ DEPENDENCIES
   byebug
   capistrano (~> 3.6)
   capistrano-bundler
-  capistrano-delayed-job
   capistrano-passenger
   capistrano-rails
   capistrano-rbenv
