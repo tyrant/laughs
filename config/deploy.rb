@@ -42,6 +42,8 @@ set :rbenv_path, '/home/app-user/.rbenv'
 set :rbenv_type, :user # or :system, depends on your rbenv setup
 set :rbenv_ruby, '2.2.2'
 
+set :delayed_job_workers, 3
+
 namespace :deploy do
 
   desc "Restart application"
@@ -52,7 +54,9 @@ namespace :deploy do
   end
 
   after :publishing, 'deploy:restart'
+  after :publishing, 'delayed_job:restart'
   after :finishing, 'deploy:cleanup'
+
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
