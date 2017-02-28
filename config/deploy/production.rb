@@ -63,3 +63,5 @@
 set :stage, :production
 server '119.9.42.4', user: 'app-user', password: 'hostable730', roles: %w{web, app}
 set :assets_roles, [:web, :app]
+
+set :delayed_job_workers, 4

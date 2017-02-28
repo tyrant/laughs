@@ -49,12 +49,20 @@ namespace :deploy do
   desc "Restart application"
   task :restart do
     on roles(:app), in: :sequence, wait: 5 do
+
       execute :touch, release_path.join('tmp/restart.txt')
+
+      # within release_path do
+      #   with rails_env: fetch(:rails_env) do
+      #     execute :bundle, :exec, :'bin/delayed_job', args, :restart
+      #   end
+      # end
+
     end
   end
 
   after :publishing, 'deploy:restart'
-  after :publishing, 'delayed_job:restart'
+  #after :publishing, 'delayed_job:restart'
   after :finishing, 'deploy:cleanup'
 
 

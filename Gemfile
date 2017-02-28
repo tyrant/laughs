@@ -68,7 +68,7 @@ group :development do
   gem 'capistrano-rbenv'
   gem 'capistrano-rbenv-install'
   gem 'capistrano-passenger'
-  gem 'capistrano3-delayed-job'
+  gem 'capistrano-delayed-job'
 end
 
 
