@@ -4,46 +4,183 @@ describe Gig do
 
   describe ".find_or_create_by; " do
 
-    let!(:v) { FactoryGirl.create :venue }
-    let!(:date) { "4 January 2018" }
-    let!(:existing_gig) { FactoryGirl.create :gig, venue: v, time: DateTime.parse(date) }
+    let!(:venue) { FactoryGirl.create :venue }
+    let!(:comedian) { FactoryGirl.create :comedian }
 
-    describe "Gig object already exists; " do
+    describe "Date string has no time component; " do
 
-      before do
-        @gig, @created = Gig.find_or_create_by({ date: date }, v)
+      let!(:date_without_time) { Faker::Date.between(Date.today, 5.years.from_now).strftime("%-d %B %Y") }
+
+      describe "Another gig by the same comic exists at that exact time; " do
+
+        let!(:existing_gig) { FactoryGirl.create :gig, venue: venue, time: DateTime.parse(date_without_time) }
+        let!(:spot) { FactoryGirl.create :spot, gig: existing_gig, comedian: comedian }
+
+        before do
+          VCR.use_cassette('Timezone') do
+            @gig, @created = Gig.find_or_create_by({
+              input_gig: { date: date_without_time }, 
+              venue:     venue,
+              comedian:  comedian
+            })
+          end
+        end
+
+        it "detects the other gig and returns it; " do
+          expect(@gig).to eq existing_gig
+        end
+
+        it "returns @created=false" do
+          expect(@created).to eq false
+        end
       end
 
-      it "returns the existing gig" do
-        expect(@gig).to eq existing_gig
+      describe "Another gig by the same comic exists within 6 hours; " do
+
+        let!(:existing_gig) { FactoryGirl.create :gig, venue: venue, time: DateTime.parse(date_without_time) + 6.hours }
+        let!(:spot) { FactoryGirl.create :spot, gig: existing_gig, comedian: comedian }
+
+        before do
+          VCR.use_cassette('Timezone') do
+            @gig, @created = Gig.find_or_create_by({
+              input_gig: { date: date_without_time }, 
+              venue:     venue,
+              comedian:  comedian
+            })
+          end
+        end
+
+        it "detects the other gig and returns it; " do
+          expect(@gig).to eq existing_gig
+        end
+
+        it "returns @created=false" do
+          expect(@created).to eq false
+        end
       end
 
-      it "returns @created=false" do
-        expect(@created).to eq false
+      describe "Another gig by a different comic exists within 6 hours; " do
+
+        let!(:other_comic) { FactoryGirl.create :comedian }
+        let!(:other_gig) { FactoryGirl.create :gig, venue: venue }
+        let!(:other_spot) { FactoryGirl.create :spot, comedian: other_comic, gig: other_gig }
+
+        before do
+          @existing_gig_count = Gig.count
+          VCR.use_cassette('Timezone') do
+            @gig, @created = Gig.find_or_create_by({
+              input_gig: { date: date_without_time }, 
+              venue:     venue,
+              comedian:  other_comic
+            })
+          end
+        end
+
+        it "ignores that other comic's gig and creates a new one; " do
+          expect(@gig).not_to eq other_gig
+        end
+
+        it "returns @created=true" do
+          expect(@created).to eq true
+        end
+
+        it "bumps up Gig.count" do
+          expect(Gig.count).to eq @existing_gig_count + 1
+        end
       end
     end
 
-    describe "Gig object doesn't exist; " do
+    describe "Date string has a time component; " do
 
-      let!(:other_date) { "5 January 2018" }
+      let!(:date_with_time) { "#{Faker::Date.between(Date.today, 5.years.from_now).strftime("%-d %B %Y")} 7:30pm" }
 
-      before do 
-        @current_gig_count = Gig.count
-        @gig, @created = Gig.find_or_create_by({ date: other_date }, v)
+      describe "Another gig by the same comic exists at that exact time; " do
+
+        let!(:existing_gig) { FactoryGirl.create :gig, venue: venue, time: DateTime.parse(date_with_time) }
+        let!(:spot) { FactoryGirl.create :spot, gig: existing_gig, comedian: comedian }
+
+        before do
+          VCR.use_cassette('Timezone') do
+            @gig, @created = Gig.find_or_create_by({
+              input_gig: { date: date_with_time }, 
+              venue:     venue,
+              comedian:  comedian
+            })
+          end
+        end
+
+        it "detects that other gig and returns it; " do
+          expect(@gig).to eq existing_gig
+        end
+
+        it "returns @created=false" do
+          expect(@created).to eq false
+        end
       end
 
-      it "returns a new gig" do
-        expect(@gig).not_to eq existing_gig
+      describe "Another gig by the same comic exists within 6 hours; " do
+
+        let!(:existing_gig) { FactoryGirl.create :gig, venue: venue, time: DateTime.parse(date_with_time) + 6.hours }
+        let!(:spot) { FactoryGirl.create :spot, gig: existing_gig, comedian: comedian }
+
+        before do
+          @existing_gig_count = Gig.count
+          VCR.use_cassette('Timezone') do
+            @gig, @created = Gig.find_or_create_by({
+              input_gig: { date: date_with_time }, 
+              venue:     venue,
+              comedian:  comedian
+            })
+          end
+        end
+
+        it "ignores that other gig and creates a new one" do
+          expect(@gig).not_to eq existing_gig
+        end
+
+        it "returns @created=true" do
+          expect(@created).to eq true
+        end
+
+        it "bumps up Gig.count" do
+          expect(Gig.count).to eq @existing_gig_count + 1
+        end
       end
 
-      it "bumps up the Gigs count" do
-        expect(Gig.count).to eq @current_gig_count + 1
-      end
+      describe "Another gig by a different comic exists within 6 hours; " do
 
-      it "returns @created=true" do
-        expect(@created).to eq true
+        let!(:other_comic) { FactoryGirl.create :comedian }
+        let!(:other_gig) { FactoryGirl.create :gig, venue: venue }
+        let!(:other_spot) { FactoryGirl.create :spot, comedian: other_comic, gig: other_gig }
+
+        before do
+          @existing_gig_count = Gig.count
+          VCR.use_cassette('Timezone') do
+            @gig, @created = Gig.find_or_create_by({
+              input_gig: { date: date_with_time }, 
+              venue:     venue,
+              comedian:  other_comic
+            })
+          end
+        end
+
+        it "ignores that other comic's gig and creates a new one" do
+          expect(@gig).not_to eq other_gig
+        end
+
+        it "returns @created=true" do
+          expect(@created).to eq true
+        end
+
+        it "bumps up Gig.count" do
+          expect(Gig.count).to eq @existing_gig_count + 1
+        end
       end
     end
+
+    describe "timezones; " do
+    end
+
   end
 
   describe "#as_json; " do

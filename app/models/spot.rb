@@ -10,13 +10,17 @@ class Spot < ApplicationRecord
   validates :gig, presence: true
   validates :comedian, presence: true
 
-  def Spot.find_or_create_by(comedian, gig)
 
-    unless spot = Spot.where(comedian: comedian, gig: gig).first
+  # What it says on the tin.
+  # @param comedian. AR object.
+  # @param gig. AR object.
+  def Spot.find_or_create_by(params={})
+
+    unless spot = Spot.where(comedian: params[:comedian], gig: params[:gig]).first
 
       spot = Spot.create({
-        gig:      gig,
-        comedian: comedian
+        gig:      params[:gig],
+        comedian: params[:comedian]
       })
       created = true
 

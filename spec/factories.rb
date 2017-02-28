@@ -17,6 +17,8 @@ FactoryGirl.define do
   factory :venue do
     name { Faker::Commerce.product_name }
     description { Faker::TwinPeaks.quote }
+
+    # Virtual attributes and not database columns!
     latitude { Faker::Address.latitude }
     longitude { Faker::Address.longitude }
 
@@ -26,6 +28,10 @@ FactoryGirl.define do
 
     phone { Faker::PhoneNumber.phone_number }
     deets 'Down by the docks'
+
+    after :build do |venue|
+      venue.set_location(latitude: venue.latitude, longitude: venue.longitude)
+    end
 
   end
 

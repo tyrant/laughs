@@ -1058,8 +1058,19 @@ ClusterIcon.prototype.triggerClusterClick = function() {
   google.maps.event.trigger(markerClusterer, 'clusterclick', this.cluster_);
 
   if (markerClusterer.isZoomOnClick()) {
+
     // Zoom into the cluster.
-    this.map_.fitBounds(this.cluster_.getBounds());
+    // this.map_.fitBounds(this.cluster_.getBounds());
+
+    // Actually no don't do that; just centre the map on the icon,
+    // and zoom in two levels further.
+    var currentZoom = this.map_.getZoom();
+    var clusterCenter = this.cluster_.getCenter();
+    this.map_.setCenter({
+      lat: clusterCenter.lat(),
+      lng: clusterCenter.lng(),
+    });
+    this.map_.setZoom(currentZoom + 2);
   }
 };
 

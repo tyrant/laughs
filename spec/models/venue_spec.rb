@@ -72,6 +72,10 @@ describe Venue do
       let!(:v1) { FactoryGirl.create :venue, latitude: 20, longitude: 20 }
       let!(:v2) { FactoryGirl.create :venue, latitude: 20, longitude: 170 }
       let!(:v3) { FactoryGirl.create :venue, latitude: -20, longitude: -170 }
+      let!(:v4) { FactoryGirl.create :venue, latitude: 20, longitude: -20 }
+      let!(:v5) { FactoryGirl.create :venue, latitude: 0, longitude: 0 }
+      let!(:v6) { FactoryGirl.create :venue, latitude: -20, longitude: -20 }
+      let!(:v7) { FactoryGirl.create :venue, latitude: -20, longitude: 20 }
       let!(:g1) { FactoryGirl.create :gig, time: DateTime.now + 2.days, venue: v1 }
       let!(:g2) { FactoryGirl.create :gig, time: DateTime.now + 3.days, venue: v1 }
       let!(:g3) { FactoryGirl.create :gig, time: DateTime.now + 4.days, venue: v2 }
@@ -92,7 +96,7 @@ describe Venue do
       # A list of venue IDs to exclude regardless of the above filters.
 
       it "returns all venues when all params are absent" do
-        expect(Venue.filter).to eq [v1, v2, v3]
+        expect(Venue.filter).to eq [v1, v2, v3, v4, v5, v6, v7]
       end
 
       describe "comedian IDs; " do
@@ -159,43 +163,49 @@ describe Venue do
         end
       end
 
-      describe "without; " do
-
-        it "returns v3 normally" do
-          venues = Venue.filter comedians: [c2.id]
-          expect(venues).to include v3
-        end
-
-        it "doesn't return v3 when the filter otherwise would" do
-          venues = Venue.filter comedians: [c2.id], without: [v3.id]
-          expect(venues).not_to include v3
-        end
-      end
-
       describe "lat/lng bounds; " do
 
-        # Rectangle doesn't straddle the date line
-        it "returns v1, v2 with sw_lat=10, sw_lng=10, ne_lat=30, ne_lng=175" do
-          venues = Venue.filter sw_lat: 10, sw_lng: 10, new_lat: 30, ne_lng: 175
-          expect(venues).to eq [v1, v2]
+        describe "inside; " do
+
+          # Rectangle doesn't straddle the date line
+          it "returns v1, v2 with sw_lat=10, sw_lng=10, ne_lat=30, ne_lng=175" do
+            venues = Venue.filter inside: { sw_lat: 10, sw_lng: 10, ne_lat: 30, ne_lng: 175 }
+            expect(venues).to eq [v1, v2]
+          end
+
+          # Rectangle straddles date line
+          it "returns v2, v3 with sw_lat=-30, sw_lng=165, ne_lat=30, ne_lng=-165" do
+            venues = Venue.filter inside: { sw_lat: -30, sw_lng: 165, ne_lat: 30, ne_lng: -165 }
+            expect(venues).to eq [v2, v3]
+          end
+
+          # No straddling
+          it "returns all except v2 with sw_lat=-30, sw_lng=-175, ne_lat=25, ne_lng=25" do
+            venues = Venue.filter inside: { sw_lat: -30, sw_lng: -175, ne_lat: 25, ne_lng: 25 }
+            expect(venues).to eq [v1, v3, v4, v5, v6, v7]
+          end
+
+          # Straddling
+          it "returns all except v2 with sw_lat=-30, sw_lng=175, ne_lat=25, ne_lng=25" do
+            venues = Venue.filter inside: { sw_lat: -30, sw_lng: 175, ne_lat: 25, ne_lng: 25 }
+            expect(venues).to eq [v1, v3, v4, v5, v6, v7]
+          end
         end
 
-        # Rectangle straddles date line
-        it "returns v2, v3 with sw_lat=-30, sw_lng=165, ne_lat=30, ne_lng=-165" do
-          venues = Venue.filter sw_lat: -30, sw_lng: 165, ne_lat: 30, ne_lng: -165
-          expect(venues).to eq [v2, v3]
-        end
+        describe "outside; " do
 
-        # No straddling
-        it "returns v1, v3 with sw_lat=-30, sw_lng=-175, ne_lat=25, ne_lng=25" do
-          venues = Venue.filter sw_lat: -30, sw_lng: -175, ne_lat: 25, ne_lng: 25
-          expect(venues).to eq [v1, v3]
-        end
+          # No idl straddling
+          # This throws an 'inside' box around the five venues in an X crossing (0, 0), but
+          # not the venue right at (0, 0)
+          it "returns 1, 4, 6, 7, but not 5" do
 
-        # Straddling
-        it "returns v1, v3 with sw_lat=-30, sw_lng=175, ne_lat=25, ne_lng=25" do
-          venues = Venue.filter sw_lat: -30, sw_lng: 175, ne_lat: 25, ne_lng: 25
-          expect(venues).to eq [v1, v3]
+            venues = Venue.filter({
+              inside: { sw_lat: -30, sw_lng: -30, ne_lat: 30, ne_lng: 30 },
+              #outside: { sw_lat: -10, sw_lng: -10, ne_lat: 10, ne_lng: 10 }
+            })
+
+            expect(venues).to eq [v1, v4, v6, v7]
+          end
         end
       end
     end

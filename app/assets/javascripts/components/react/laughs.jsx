@@ -7,9 +7,10 @@ class Laughs extends React.Component {
     // Set up our functions' 'this' scopes.
     this.fetchMoreVenues = this.fetchMoreVenues.bind(this);
     this.comedians = this.comedians.bind(this);
-    this.selectedVenuesAndGigs = this.selectedVenuesAndGigs.bind(this);
+    //this.selectedVenuesAndGigs = this.selectedVenuesAndGigs.bind(this);
     this.gigFilters = this.gigFilters.bind(this);
     this.bounds = this.bounds.bind(this);
+    this.blurbData = this.blurbData.bind(this);
 
     this.handleSearchFormChange = this.handleSearchFormChange.bind(this);
     this.handleOverlayToggleClick = this.handleOverlayToggleClick.bind(this);
@@ -43,17 +44,13 @@ class Laughs extends React.Component {
   // their IDs.
   fetchMoreVenues() {
 
-    // Grab the venues to be displayed within the map's bounds right now,
-    // and that are already loaded. No point in fetching them a second time -
-    // add their IDs to the 'without' list.
-    const venuesVisibleAndLoaded = this.state.allVenues.within(this.bounds());
-
-    let data = _(this.bounds()).extend({
-      comedians:  this.state.selectedComedians.pluck('id'),
-      start_date: this.state.startDate,
-      end_date:   this.state.endDate,
-      without:    venuesVisibleAndLoaded.pluck('id'),
-    });
+    let data = {
+      comedians:   this.state.selectedComedians.pluck('id'),
+      start_date:  this.state.startDate,
+      end_date:    this.state.endDate,
+      inside:      this.bounds(),
+      zoom:        this.state.zoom,
+    };
 
     // Fiddly bit here. On page load, if the current venue is set, we want to 
     // show its gigs - but it's not loaded as a Backbone model until the Ajax
@@ -64,20 +61,22 @@ class Laughs extends React.Component {
     }
 
     this.setState({
-      blurb: 'Loading more gigs...'
+      blurb: 'loading',
     });
 
-    // Attempting to add a JSON object with the same ID twice will get rejected.
     $.getJSON('/venues', data).done((venuesJson) => {
 
       let allVenues = this.state.allVenues;
       let currentVenue = this.state.currentVenue;
 
-      allVenues.add(venuesJson);
+      // Wipe our existing venues and replace them with the new lot.
+      allVenues.venues.reset(venuesJson.venues);
+      allVenues.groups = venuesJson.groups;
 
+      // If currentVenue has an integer ID value, then look through allVenues 
       if (!(this.state.currentVenue instanceof Venue)) {
         if (this.state.currentVenue != 'none') {
-          currentVenue = allVenues.find(function(v) { return v.id == data.with; });
+          currentVenue = allVenues.venues.find(v => v.id == data.with);
         } else {
           currentVenue = 'none';
         }
@@ -86,7 +85,11 @@ class Laughs extends React.Component {
       this.setState({
         currentVenue: currentVenue,
         allVenues:    allVenues,
+        blurb:       'loaded',
       });
+
+    }).error(() => {
+      alert('A bad happened! Try again later.');
     });
   }
 
@@ -98,24 +101,6 @@ class Laughs extends React.Component {
     } else {
       return this.state.allComedians;
     }
-  }
-
-
-  // selectedVenuesAndGigs is the result of applying the search form filters
-  // to allVenues, and to each of their gigs. It's only ever called from render().
-  // This function is local venue caching, basically.
-  selectedVenuesAndGigs() {
-
-    // Filter first by venues with at least one gig with start > time > end, 
-    // and with gig.comedians including comedians().
-    return this.state.allVenues.matchVenuesAndGigs({
-      start:     this.state.startDate,
-      end:       this.state.endDate,
-      comedians: this.comedians(),
-      gigFilter: 's',
-
-    // Filter second by map bounds.
-    }).within(this.bounds());
   }
 
 
@@ -146,6 +131,38 @@ class Laughs extends React.Component {
         sw_lat: -90,
         sw_lng: -180,
       };
+  }
+
+
+  // If fetchVenues() has set state.ajax to 'loading', return that,
+  // otherwise, return { venues: count, gigs: count }.
+  blurbData() {
+    const blurb = this.state.blurb;
+
+    if (blurb == 'loading') {
+      return { 
+        ajaxState: 'loading',
+      };
+
+    } else if (blurb == 'loaded') {
+
+      // Calculate venue counts
+      const allVenues = this.state.allVenues;
+      const venueCount = allVenues.venues.length;
+      const groupVenueCount = allVenues.groups.map(g => g.ids.length).reduce((m, n) => { return m+n; }, 0);
+
+      // Calculate gig counts
+      const venueGigCounts = allVenues.venues.map(v => v.gigs().length);
+      const groupGigCounts = _(allVenues.groups).pluck('gig_count');
+      const bothCounts = _([venueGigCounts, groupGigCounts]).flatten();
+      const gigSum = _(bothCounts).reduce((m, n) => { return m+n; }, 0);
+
+      return {
+        ajaxState: 'loaded',
+        venues:    venueCount + groupVenueCount,
+        gigs:      gigSum,
+      };
+    }
   }
 
 
@@ -222,6 +239,7 @@ class Laughs extends React.Component {
 
     let allComedians = new ComedianCollection();
     allComedians.reset(window.allComedians);
+    allComedians = new ComedianCollection(allComedians.sortBy((c) => c.get('name')));
 
     // If there's zilch in the URL, this is a decent default state for our app.
     // The URL's various bits and bobs overwrite this.
@@ -230,7 +248,7 @@ class Laughs extends React.Component {
       lng:               3,
       zoom:              5,
       selectedComedians: new ComedianCollection(), 
-      allVenues:         new VenueCollection(), 
+      allVenues:         { venues: new VenueCollection(), groups: [] },
       currentVenue:      null,
       bounds:            null,
       startDate:         moment().unix(),
@@ -238,7 +256,7 @@ class Laughs extends React.Component {
       showOverlay:       true,
       tab:               'search',
       gigFilter:         's',
-      blurb:             'Find your favourite gigs!',
+      blurb:             'loading',
     };
 
     let urlData = this.getUrlData();
@@ -334,30 +352,33 @@ class Laughs extends React.Component {
   // Default: we render the map and overlay. 
   // If we've got a venue, render its view instead.
   render() {
-    const selectedVenuesAndGigs = this.selectedVenuesAndGigs();
     const gigFilters = this.gigFilters();
+    const blurbData = this.blurbData();
 
-    const gigCounts = selectedVenuesAndGigs.map(v => v.gigs().length);
-    const gigSum = _(gigCounts).reduce((m, n) => { return m+n; }, 0);
-
-    const blurb = "Showing " + selectedVenuesAndGigs.length + " venues and " + gigSum + " gigs";
+    let venueDeepCopy = {
+      venues: new VenueCollection(this.state.allVenues.venues.models),
+      groups: this.state.allVenues.groups
+    };
 
     return (
       <div>
+
         <Banner 
           handleOverlayToggleClick={this.handleOverlayToggleClick}
-          blurb={blurb}
+          blurbData={blurbData}
         />
 
         <div id="everything_else">
+
           <Map
             lat={this.state.lat}
             lng={this.state.lng}
             zoom={this.state.zoom}
-            selectedVenuesAndGigs={selectedVenuesAndGigs}
+            venues={venueDeepCopy}
             handleMapChange={this.handleMapChange}
             handleMarkerClick={this.handleMarkerClick}
           />
+
           <Overlay
             showOverlay={this.state.showOverlay}
 
@@ -374,6 +395,7 @@ class Laughs extends React.Component {
 
             currentVenue={this.state.currentVenue}
           />
+
         </div>
       </div>
     );

@@ -18,6 +18,9 @@ class Overlay extends React.Component {
       <div id="overlay" className="container" style={{display: this.props.showOverlay ? 'block' : 'none'}}>
 
         <ul className="nav nav-tabs" role="tablist">
+          <li role="presentation" className={this.props.tab == 'credits' ? 'active' : ''}>
+            <a href="#credits" aria-controls="credits" role="tab" data-toggle="tab">Credits</a>
+          </li>
           <li role="presentation" className={this.props.tab == 'faq' ? 'active' : ''}>
             <a href="#faq" aria-controls="faq" role="tab" data-toggle="tab">FAQs</a>
           </li>
@@ -30,6 +33,7 @@ class Overlay extends React.Component {
         </ul>
 
         <div className="tab-content">
+
           <div role="tabpanel" className={this.props.tab == 'search' ? 'tab-pane active' : 'tab-pane'} id="search">
             <SearchForm 
               allComedians={this.props.allComedians} 
@@ -39,6 +43,7 @@ class Overlay extends React.Component {
               handleSearchFormChange={this.props.handleSearchFormChange}
             />
           </div>
+
           <div role="tabpanel" className={this.props.tab == 'gigs' ? 'tab-pane active' : 'tab-pane'} id="gigs">
             <VenueInfo 
               currentVenue={this.props.currentVenue}
@@ -46,8 +51,13 @@ class Overlay extends React.Component {
               handleGigFilterChange={this.props.handleGigFilterChange}
             />
           </div>
+
           <div role="tabpanel" className={this.props.tab == 'faq' ? 'tab-pane active' : 'tab-pane'} id="faq">
             <FAQs />
+          </div>
+
+          <div role="tabpanel" className={this.props.tab == 'credits' ? 'tab-pane active' : 'tab-pane'} id="credits">
+            <Credits />
           </div>
         </div>
       </div>

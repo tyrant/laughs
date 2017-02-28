@@ -25,17 +25,6 @@ describe Comedian do
     end
   end
 
-  describe ".ordered_by_surname; " do
-
-    let!(:c1) { FactoryGirl.create :comedian, name: "Mr. One" }
-    let!(:c2) { FactoryGirl.create :comedian, name: "Ms. Two" }
-    let!(:c3) { FactoryGirl.create :comedian, name: "Miss Three" }
-
-    it "orders alphabetically by last space-separated token: c1, c3, c2" do
-      expect(Comedian.ordered_by_surname).to eq [c1, c3, c2]
-    end
-  end
-
   describe "#as_json; " do
 
     let!(:c) { FactoryGirl.create :comedian }

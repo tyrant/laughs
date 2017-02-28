@@ -45,11 +45,13 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'faker'
   gem 'jasmine'
+  gem 'jasmine-rails'
 end
 
 group :test do
   gem 'vcr'
   gem 'webmock'
+  gem 'database_cleaner'
 end
 
 group :development do
@@ -69,7 +71,6 @@ group :development do
 end
 
 
-
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
@@ -84,6 +85,14 @@ gem 'paperclip'
 gem 'react-rails'
 gem "sprockets"
 gem "sprockets-es6"
+gem 'font-awesome-rails'
+gem 'rb-readline' # Without this, postgres 9.62 is incompatible with rails c
+gem 'timezone'
+gem 'delayed_job_active_record'
+gem 'daemons'
+gem 'activerecord-postgis-adapter'
+gem 'baby_squeel'
+gem 'dalli'
 
 # Normally these are in :development, :test, but we'll be using these to scrape
 # Sara Pascoe's site, and others.

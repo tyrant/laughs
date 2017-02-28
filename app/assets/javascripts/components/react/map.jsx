@@ -8,7 +8,10 @@ class Map extends React.Component {
 
     this.handleMapChange = this.handleMapChange.bind(this);
     this.addNewVenuesToMap = this.addNewVenuesToMap.bind(this);
-    this.removeOldVenuesFromMap = this.removeOldVenuesFromMap.bind(this);
+    this.addNewVenueGroupsToMap = this.addNewVenueGroupsToMap.bind(this);
+
+    this.getIdsFromVenuesAndGroups = this.getIdsFromVenuesAndGroups.bind(this);
+    this.arrayDifference = this.arrayDifference.bind(this);
   }
 
 
@@ -16,19 +19,29 @@ class Map extends React.Component {
 
     // Fire up the map.
     this.map = new google.maps.Map(this.refs.map, {
-      center: new google.maps.LatLng(this.props.lat, this.props.lng),
-      zoom:   this.props.zoom
+      center:    new google.maps.LatLng(this.props.lat, this.props.lng),
+      zoom:      this.props.zoom,
+      mapTypeId: 'terrain'
     });
 
     // Fire up the clusterer.
     this.clusterer = new MarkerClusterer(this.map, [], {
       imagePath: '/m',
-      gridSize:  40,
+      gridSize:  45,
     });
 
     // Fire up a few event listeners.
     this.map.addListener('dragend', this.handleMapChange);
-    this.map.addListener('zoom_changed', this.handleMapChange); 
+    this.map.addListener('zoom_changed', this.handleMapChange);
+
+    // A little bit of fiddliness to fetch more venues after the window size finishes changing.
+    let resizeTimer;
+    google.maps.event.addDomListener(window, 'resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        this.handleMapChange();
+      }, 500);
+    });
 
     // And fire map change just once. 
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
@@ -37,14 +50,35 @@ class Map extends React.Component {
   }
 
 
+  // What it says on the tin.
+  getIdsFromVenuesAndGroups(venues) {
+    return {
+      venues: venues.venues.pluck('id'),
+      groups: _(venues.groups).map(venue => venue.ids),
+    };
+  } 
+
+
+  // Receive two arrays of arrays of integers. Remove all integer arrays
+  // from the first that are also in the second, and return the remainder.
+  arrayDifference(array1, array2) {
+
+    // Filter array1's entries by whether a1 doesn't have a member of array2 equal to it.
+    return _(array1).filter((a1) => {
+
+      // Not a single member of array2 equals a1? Great. Filter passed.
+      return !_(array2).any(a2 => _(a1).isEqual(a2));
+    });
+  }
+
+
   // We only want to update the map if the venue list has changed.
-  // _.isEqual works on primitives, not objects, it seems, so pluck both arrays' IDs.
   shouldComponentUpdate(nextProps, nextState) {
 
-    oldVenueIds = this.props.selectedVenuesAndGigs.pluck('id');
-    newVenueIds = nextProps.selectedVenuesAndGigs.pluck('id');
+    oldIds = this.getIdsFromVenuesAndGroups(this.props.venues);
+    newIds = this.getIdsFromVenuesAndGroups(nextProps.venues);
 
-    return !_.isEqual(oldVenueIds, newVenueIds);
+    return !_.isEqual(oldIds, newIds);
   }
 
 
@@ -52,24 +86,21 @@ class Map extends React.Component {
   // which have gone; add the new ones to the map, and delete the old markers.
   componentDidUpdate(prevProps, prevState) {
 
-    // Rr! _.difference() only works on primitives.
-    oldVenueIds = prevProps.selectedVenuesAndGigs.pluck('id');
-    newVenueIds = this.props.selectedVenuesAndGigs.pluck('id');
+    newIds = this.getIdsFromVenuesAndGroups(this.props.venues);
 
-    venueIdsToRemove = _(oldVenueIds).difference(newVenueIds);
-    venueIdsToAdd = _(newVenueIds).difference(oldVenueIds);
+    this.removeAllMarkers();
 
-    this.addNewVenuesToMap(venueIdsToAdd);
-    this.removeOldVenuesFromMap(venueIdsToRemove);
+    this.addNewVenuesToMap(newIds.venues);
+    this.addNewVenueGroupsToMap(newIds.groups);
   }
 
 
-  addNewVenuesToMap(venueIds) {
+  addNewVenuesToMap(newIds) {
 
     // Set our current markers list.
-    let addedMarkers = _(venueIds).map((venueId) => {
+    let addedVenueMarkers = _(newIds).map((venueId) => {
 
-      let venue = this.props.selectedVenuesAndGigs.find((venue) => { 
+      let venue = this.props.venues.venues.find((venue) => { 
         return venue.id == venueId; 
       });
 
@@ -84,40 +115,54 @@ class Map extends React.Component {
       });
 
       marker.venue = venue;
+      marker.venueId = venue.id;
+
       return marker;
     });
 
     // Add our newly created markers to (1) this.markers, and (2) the clusterer.
-    _(addedMarkers).each((marker) => {
+    _(addedVenueMarkers).each((marker) => {
       this.markers.push(marker);
     });
+  }
+
+
+  addNewVenueGroupsToMap(venueIdArrays) {
+
+    let addedVenueGroupMarkers = [];
+
+    _(venueIdArrays).each((venueIds) => {
+      _(venueIds).each((venueId) => {
+
+        let venueGroup = this.props.venues.groups.find((group) => {
+          return _(group.ids).contains(venueId);
+        });
+
+        let marker = new google.maps.Marker({
+          position: new google.maps.LatLng(venueGroup.latitude, venueGroup.longitude),
+          map:      this.map
+        });
+
+        marker.venueId = venueId;
+
+        addedVenueGroupMarkers.push(marker);
+      });
+    });
+
+    _(addedVenueGroupMarkers).each((marker) => {
+      this.markers.push(marker);
+    });
+
     this.clusterer.addMarkers(this.markers);
   }
 
 
-  removeOldVenuesFromMap(venueIds) {
-
-    // Calculate which markers are to be removed
-    var removedMarkers = _(venueIds).map((venueId) => {
-      return _(this.markers).find((marker) => { 
-        return marker.venue.id == venueId; 
-      });
-    });
-
-    // Remove them from this.markers
-    this.markers = _(this.markers).filter((marker) => {
-      return !_(venueIds).contains(marker.venue.id);
-    });
-
-    // Set their map to null
-    _(removedMarkers).each((marker) => {
+  removeAllMarkers() {
+    _(this.markers).each((marker) => {
       marker.setMap(null);
     });
-
-    // Remove markers from clusterer. Testing shows this is much much faster
-    // than calling this.clusterer.removeMarker() on each removed marker.
+    this.markers = [];
     this.clusterer.clearMarkers();
-    this.clusterer.addMarkers(this.markers);
   }
 
 

@@ -1,13 +1,13 @@
+
 <% content_for :map_script do %>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= GP::API_KEY %>"></script>
 <% end %>
 
 <script>
   $(function() {
-    window.allComedians = <%= raw Comedian.ordered_by_surname.to_json %>;
+    window.allComedians = <%= raw @all_comedians %>;
     ReactDOM.render(React.createElement(Laughs), document.getElementById('laughs'));
   });
 </script>
 
 <div id="laughs"></div>
-

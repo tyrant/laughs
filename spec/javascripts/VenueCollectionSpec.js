@@ -2,7 +2,7 @@ describe("VenueCollection", () => {
 
   // within() takes four parameters: sw_lat, sw_lng, ne_lat, ne_lng, which
   // trace out a geo-rectangle. It returns all venues within that rectangle.
-  describe("#within", () => {
+  describe("#inside", () => {
 
     let venues;
 
@@ -31,7 +31,7 @@ describe("VenueCollection", () => {
         ne_lng: 180,
       };
 
-      expect(venues.within(bounds).length).toBe(4);
+      expect(venues.inside(bounds).length).toBe(4);
     });
 
     it("returns three venues within IDL-straddling bounds (5, 160), (15, -170)", () => {
@@ -43,7 +43,7 @@ describe("VenueCollection", () => {
         ne_lng: -170,
       };
 
-      expect(venues.within(bounds).length).toBe(3);
+      expect(venues.inside(bounds).length).toBe(3);
     });
 
     afterAll(() => {
@@ -60,83 +60,63 @@ describe("VenueCollection", () => {
 
     var venues;
     var comedians;
+    var gigs;
+    var spots;
 
     // Create three venues, each with three gigs, and different comedian combinations.
     beforeAll(() => {
 
-      comedians = new ComedianCollection([{
-        id: 0, name: 'one',
-      }, {
-        id: 1, name: 'two',
-      }, {
-        id: 2, name: 'three',
-      }, {
-        id: 3, name: 'four',
-      }]);
+      comedians = new ComedianCollection([
+        { id: 1, name: 'one', }, 
+        { id: 2, name: 'two', },
+        { id: 3, name: 'three', },
+        { id: 4, name: 'four', }
+      ]);
 
-      venues = new VenueCollection([{
-        id: 0,
-        name: '1,2,3',
-        gigs: [{
-            id: 0,
-            time: moment().add(1, 'day').unix(),
-            venue_id: 0,
-            comedian_ids: [0, 1],
-          }, {
-            id: 1,
-            time: moment().add(2, 'days').unix(),
-            venue_id: 0,
-            comedian_ids: [2],
-          }, {
-            id: 2,
-            time: moment().add(3, 'days').unix(),
-            venue_id: 0,
-            comedian_ids: [3],
-          }],
-      }, {
-        id: 1,
-        name: '4,5,6',
-        gigs: [{
-            id: 3,
-            time: moment().add(4, 'days').unix(),
-            venue_id: 1,
-            comedian_ids: [2],
-          }, {
-            id: 4,
-            time: moment().add(5, 'days').unix(),
-            venue_id: 1,
-            comedian_ids: [2, 3],
-          }, {
-            id: 5,
-            time: moment().add(6, 'days').unix(),
-            venue_id: 1,
-            comedian_ids: [1, 2],
-          }],
-      }, {
-        id: 2,
-        name: '7,8,9',
-        gigs: [{
-            id: 6,
-            time: moment().add(7, 'days').unix(),
-            venue_id: 2,
-            comedian_ids: [0, 3],
-          }, {
-            id: 7,
-            time: moment().add(8, 'days').unix(),
-            venue_id: 2,
-            comedian_ids: [0, 1, 2, 3],
-          }, {
-            id: 8,
-            time: moment().add(9, 'days').unix(),
-            venue_id: 2,
-            comedian_ids: [3],
-          }],
-      }]);
+      venues = new VenueCollection([
+        { id: 1, name: '1,2,3', },
+        { id: 2, name: '4,5,6', }, 
+        { id: 3, name: '7,8,9', },
+      ]);
+
+      gigs = new GigCollection([
+        { id: 1, time: moment().add(1, 'day').unix(), venue_id: 1, },
+        { id: 2, time: moment().add(2, 'days').unix(), venue_id: 1, }, 
+        { id: 3, time: moment().add(3, 'days').unix(), venue_id: 1, },
+        { id: 4, time: moment().add(4, 'days').unix(), venue_id: 2, },
+        { id: 5, time: moment().add(5, 'days').unix(), venue_id: 2, },
+        { id: 6, time: moment().add(6, 'days').unix(), venue_id: 2, },
+        { id: 7, time: moment().add(7, 'days').unix(), venue_id: 3, }, 
+        { id: 8, time: moment().add(8, 'days').unix(), venue_id: 3, },
+        { id: 9, time: moment().add(9, 'days').unix(), venue_id: 3, },
+      ]);
+
+      spots = new SpotCollection([
+        { id: 1, gig_id: 1, comedian_id: 1, },
+        { id: 2, gig_id: 1, comedian_id: 2, },
+        { id: 3, gig_id: 2, comedian_id: 3, },
+        { id: 4, gig_id: 3, comedian_id: 4, },
+        { id: 5, gig_id: 4, comedian_id: 3, },
+        { id: 6, gig_id: 5, comedian_id: 3, },
+        { id: 7, gig_id: 5, comedian_id: 4, },
+        { id: 8, gig_id: 6, comedian_id: 2, },
+        { id: 9, gig_id: 6, comedian_id: 3, },
+        { id: 10, gig_id: 7, comedian_id: 1, },
+        { id: 11, gig_id: 7, comedian_id: 4, },
+        { id: 12, gig_id: 8, comedian_id: 1, },
+        { id: 13, gig_id: 8, comedian_id: 2, },
+        { id: 14, gig_id: 8, comedian_id: 3, },
+        { id: 15, gig_id: 8, comedian_id: 4, },
+        { id: 16, gig_id: 9, comedian_id: 4, },
+      ]);
     });
+
 
     afterAll(() => {
       venues.reset();
       comedians.reset();
+      gigs.reset();
+      spots.reset();
     });
 
     describe("matching start and end times", () => {

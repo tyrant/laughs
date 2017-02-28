@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170208224041) do
+ActiveRecord::Schema.define(version: 20170227192024) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "postgis"
 
   create_table "comedians", force: :cascade do |t|
     t.string   "name"
@@ -23,6 +24,21 @@ ActiveRecord::Schema.define(version: 20170208224041) do
     t.string   "mugshot_content_type"
     t.integer  "mugshot_file_size"
     t.datetime "mugshot_updated_at"
+  end
+
+  create_table "delayed_jobs", force: :cascade do |t|
+    t.integer  "priority",   default: 0, null: false
+    t.integer  "attempts",   default: 0, null: false
+    t.text     "handler",                null: false
+    t.text     "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string   "locked_by"
+    t.string   "queue"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
   end
 
   create_table "gigs", force: :cascade do |t|
@@ -47,18 +63,16 @@ ActiveRecord::Schema.define(version: 20170208224041) do
   end
 
   create_table "venues", force: :cascade do |t|
-    t.string   "name"
-    t.string   "description"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
-    t.float    "latitude"
-    t.float    "longitude"
-    t.string   "readable_address"
-    t.string   "google_place_id"
-    t.string   "phone"
-    t.string   "deets"
-    t.index ["latitude"], name: "index_venues_on_latitude", using: :btree
-    t.index ["longitude"], name: "index_venues_on_longitude", using: :btree
+    t.string    "name"
+    t.string    "description"
+    t.datetime  "created_at",                                                                null: false
+    t.datetime  "updated_at",                                                                null: false
+    t.string    "readable_address"
+    t.string    "google_place_id"
+    t.string    "phone"
+    t.string    "deets"
+    t.geography "location",         limit: {:srid=>4326, :type=>"point", :geographic=>true}
+    t.index ["location"], name: "index_venues_on_location", using: :gist
   end
 
 end

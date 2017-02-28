@@ -31,6 +31,7 @@
 
 // My shite
 
+//= require components/react/credits
 //= require components/react/faqs
 //= require components/react/venue-info
 //= require components/react/search-form

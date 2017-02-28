@@ -40,7 +40,7 @@ describe Spot do
     describe "Both comedian and gig already exist on the spot; " do
 
       before do
-        @spot, @created = Spot.find_or_create_by(comedian, gig)
+        @spot, @created = Spot.find_or_create_by(comedian: comedian, gig: gig)
       end
 
       it "returns the current spot" do
@@ -66,7 +66,7 @@ describe Spot do
 
       before do
         @spot_count = Spot.count
-        @spot, @created = Spot.find_or_create_by(comedian, another_gig)
+        @spot, @created = Spot.find_or_create_by(comedian: comedian, gig: another_gig)
       end
 
       it "creates a new spot" do
@@ -97,7 +97,7 @@ describe Spot do
 
       before do
         @spot_count = Spot.count
-        @spot, @created = Spot.find_or_create_by(another_comedian, gig)
+        @spot, @created = Spot.find_or_create_by(comedian: another_comedian, gig: gig)
       end
 
       it "creates a new spot" do
@@ -128,7 +128,7 @@ describe Spot do
 
       before do
         @spot_count = Spot.count
-        @spot, @created = Spot.find_or_create_by(another_comedian, another_gig)
+        @spot, @created = Spot.find_or_create_by(comedian: another_comedian, gig: another_gig)
       end
 
       it "creates a new spot" do
