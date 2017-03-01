@@ -89,7 +89,7 @@ class Laughs extends React.Component {
       });
 
     }).error(() => {
-      alert('A bad happened! Try again later.');
+      console.log('A bad happened! Try again later.');
     });
   }
 
