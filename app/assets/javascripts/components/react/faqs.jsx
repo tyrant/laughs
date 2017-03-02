@@ -116,6 +116,41 @@ function FAQs() {
           </div>
         </div>
       </div>
+
+      <div className="panel panel-default">
+        <div className="panel-heading" role="tab" id="headingFive">
+          <h4 className="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#faq_accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+              What are all these map icons?
+            </a>
+          </h4>
+        </div>
+        <div id="collapseFive" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div className="panel-body">
+            <p>
+              <img src="/map-marker.png" />A single venue. Its number denotes how many gigs we've got on record for it.
+            </p>
+            <p>
+              Otherwize, zoom in on these to see the densely clustered venues below:
+            </p>
+            <p>
+              <img src="/m1.png" />1-10 venues
+            </p>
+            <p>
+              <img src="/m2.png" />10-100 venues
+            </p>
+            <p>
+              <img src="/m3.png" />100-1000 venues
+            </p>
+            <p>
+              <img src="/m4.png" />1000-10000 venues
+            </p>
+            <p>
+              <img src="/m5.png" />10000-100000 venues
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

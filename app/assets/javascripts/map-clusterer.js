@@ -1064,13 +1064,15 @@ ClusterIcon.prototype.triggerClusterClick = function() {
 
     // Actually no don't do that; just centre the map on the icon,
     // and zoom in two levels further.
-    var currentZoom = this.map_.getZoom();
-    var clusterCenter = this.cluster_.getCenter();
-    this.map_.setCenter({
-      lat: clusterCenter.lat(),
-      lng: clusterCenter.lng(),
-    });
-    this.map_.setZoom(currentZoom + 2);
+    // var currentZoom = this.map_.getZoom();
+    // var clusterCenter = this.cluster_.getCenter();
+    // this.map_.setCenter({
+    //   lat: clusterCenter.lat(),
+    //   lng: clusterCenter.lng(),
+    // });
+    // this.map_.setZoom(currentZoom + 2);
+
+    // I've changed my mind again. Don't do shit.
   }
 };
 

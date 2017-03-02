@@ -108,6 +108,7 @@ class Map extends React.Component {
         position: new google.maps.LatLng(venue.get('latitude'), venue.get('longitude')),
         title:    venue.get('name') + ', ' + venue.get('readable_address'),
         map:      this.map,
+        label:    venue.gigs().length.toString(),
       });
 
       marker.addListener('click', (e) => {
