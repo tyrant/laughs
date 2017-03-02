@@ -910,7 +910,13 @@ task create_comedians_and_mugshots: :environment do
   }, {
     name: 'Phil Ellis',
     mugshot_url: 'http://www.justthetonic.com/artistimages/phil-ellis/feature/phil-ellis_1.jpg'
-  }]
+  }, {
+    name: "Simon Amstell",
+    mugshot_url: "https://s-media-cache-ak0.pinimg.com/originals/d5/12/63/d51263f2fe67b9341f0682a4f1229d2d.png"
+  }, {
+    name: "Gabriel Iglesias",
+    mugshot_url: "http://1.images.comedycentral.com/images/ccstandup/comedians/800x600/gabriel_iglesias2_800x600.jpg?width=800&height=600&crop=true&quality=0.91"
+    }]
 
   comedians_info.each do |comedian_info|
 

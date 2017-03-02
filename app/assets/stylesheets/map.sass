@@ -31,7 +31,7 @@ body
     right: 6px
 
 #everything_else 
-  height: calc(100% - $banner-height)
+  height: calc(100% - 40px)
 
   #map 
     width: 100%
@@ -43,14 +43,17 @@ body
     top: $banner-height
     right: 0px
     background-color: rgba(0, 0, 0, 0.4)
-    padding: 10px
+    padding: 10px 10px 0 10px
 
     @media (min-width: 400px) 
       width: 330px
       border-radius: 0 0 0 10px
+      max-height: calc(100% - 40px)
     
     @media (max-width: 400px) 
-      width: 100%
+      width: 100% 
+      border-radius: 0
+      max-height: calc(50% - 40px)
     
 #gigs 
 
@@ -66,7 +69,7 @@ body
   .panel-body 
     padding: 0
     
-    max-height: 170px
+    max-height: calc(100vh - 154px)
     overflow-y: scroll
 
     ul 
@@ -106,9 +109,6 @@ body
     overflow-y: scroll
     max-height: 150px
   
-  .select2-results__options 
-    max-height: 400px
-  
   span.input-group-addon 
     padding: 4px 5px
     font-size: 9pt
@@ -119,21 +119,16 @@ body
   .end-container 
     padding-left: 5px
 
-#faq 
+
+#faq, #credits
   margin-bottom: 10px
   overflow-y: scroll
-  max-height: calc(100% - 100px)
+  overflow-x: hidden
+  max-height: calc(100vh - 102px)
 
   *
     font-size: 9pt
 
-
-#credits
-  max-height: auto
-  margin-bottom: 10px
-
-  *
-    font-size: 9pt
 
 // Show Venue page.
 #gp_photos 
@@ -181,7 +176,7 @@ ul.nav-tabs
   margin-bottom: 10px
 
 .tab-content 
-  margin-bottom: -10px
+  max-height: 100%
 
 .panel-heading 
   padding: 5px 10px

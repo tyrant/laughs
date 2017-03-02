@@ -42,6 +42,24 @@ class SearchForm extends React.Component {
     });
   }
 
+
+  // Keeping the comedian search <ul> at the right height is
+  // too dynamic and fiddly to implement with CSS alone. 
+  // We want the comedian selection list to halt 10px above the page bottom no matter what.
+  componentDidUpdate() {
+    $('#comedians').on('select2:open', (e) => { 
+
+      let comedianSelectBottom = parseInt($('#comedians').css('top')) + parseInt($('.select2-container').css('height'));
+      $('.select2-results__options').css('max-height', 'calc(100vh - ' + (comedianSelectBottom + 65) + 'px)');
+    });
+  }
+
+
+
+// .select2-container--default
+//   .select2-results > .select2-results__options 
+//     max-height: calc(100vh - 190px) !important
+
   // Bit of munging. Change [[key, value], ...] to { key: value, ... }
   handleSearchFormChange() {
     const values = $('#filter').serializeArray();

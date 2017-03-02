@@ -107,9 +107,16 @@ class Comedian < ApplicationRecord
   end
 
 
-  # Working as of 2017-01-17
   def Comedian.gigs_by_eddie_izzard
+    [
+      Comedian.scrape_eddie_izzard,
+      Comedian.scrape_ents24("Eddie Izzard"),
+    ].flatten
+  end
 
+
+  # Working as of 2017-01-17
+  def Comedian.scrape_eddie_izzard
     dom = Nokogiri::HTML(open('http://www.eddieizzard.com/shows'))
     dom.css('.gig').map do |html_gig|
 
@@ -124,8 +131,16 @@ class Comedian < ApplicationRecord
   end
 
 
-  # Working as of 2017-01-17
   def Comedian.gigs_by_dara_o_briain
+    [
+      Comedian.scrape_dara_o_briain,
+      Comedian.scrape_off_the_kerb("Dara O Briain")
+    ].flatten
+  end
+
+
+  # Working as of 2017-01-17
+  def Comedian.scrape_dara_o_briain
 
     dom = Nokogiri::HTML(open('http://www.daraobriain.com/dates/'))
 
@@ -190,6 +205,14 @@ class Comedian < ApplicationRecord
 
 
   def Comedian.gigs_by_micky_flanagan
+    [
+      Comedian.scrape_micky_flanagan,
+      Comedian.scrape_ents24("Micky Flanagan")
+    ].flatten
+  end
+
+
+  def Comedian.scrape_micky_flanagan
 
     dom = Nokogiri::HTML(open('http://www.livenation.co.uk/artist/micky-flanagan-tickets'))
 
@@ -326,6 +349,7 @@ class Comedian < ApplicationRecord
     ].flatten
   end
 
+
   def Comedian.scrape_frankie_boyle
     dom = Nokogiri::HTML(open('https://www.frankieboyle.com/'))
 
@@ -346,9 +370,11 @@ class Comedian < ApplicationRecord
   def Comedian.gigs_by_jon_richardson
     [
       Comedian.scrape_jon_richardson,
-      Comedian.scrape_ents24("Jon Richardson")
+      Comedian.scrape_ents24("Jon Richardson"),
+      Comedian.scrape_off_the_kerb('Jon Richardson')
     ].flatten
   end
+
 
   def Comedian.scrape_jon_richardson
 
@@ -845,7 +871,8 @@ class Comedian < ApplicationRecord
   def Comedian.gigs_by_tom_allen
     [
       Comedian.scrape_tom_allen,
-      Comedian.scrape_ents24("Tom Allen")
+      Comedian.scrape_ents24("Tom Allen"),
+      comedian.scrape_off_the_kerb("Tom Allen"),
     ].flatten
   end
     
@@ -1042,7 +1069,10 @@ class Comedian < ApplicationRecord
 
 
   def Comedian.gigs_by_sean_lock
-    Comedian.scrape_ents24 "Sean Lock"
+    [
+      Comedian.scrape_ents24("Sean Lock"),
+      Comedian.scrape_off_the_kerb("Sean Lock"),
+    ].flatten
   end
 
 
@@ -1290,7 +1320,10 @@ class Comedian < ApplicationRecord
 
 
   def Comedian.gigs_by_simon_evans
-    Comedian.scrape_ents24 "Simon Evans"
+    [
+      Comedian.scrape_ents24("Simon Evans"),
+      Comedian.scrape_off_the_kerb("Simon Evans"),
+    ].flatten
   end
 
 
@@ -2066,7 +2099,8 @@ class Comedian < ApplicationRecord
 
   def Comedian.gigs_by_foil_arms_and_hog
     [
-      Comedian.scrape_ents24("Foil Arms And Hog")
+      Comedian.scrape_ents24("Foil Arms And Hog"),
+      Comedian.scrape_off_the_kerb("Foil Arms And Hog")
     ].flatten
   end
 
@@ -2525,6 +2559,29 @@ class Comedian < ApplicationRecord
   end
 
 
+  def Comedian.gigs_by_simon_amstell
+    [
+      Comedian.scrape_ents24("Simon Amstell"),
+      Comedian.scrape_simon_amstell
+    ].flatten
+  end
+
+
+  def Comedian.scrape_simon_amstell
+
+    dom = Nokogiri::HTML(open('https://www.simonamstell.com/tour-1'))
+
+    dom.css('.main-content [data-block-type="53"]:not(:last-child)').map do |gig|
+
+      text = gig.text.squish.split(',')
+
+      {
+        date:              text.last,
+        venue_deets:       "#{text[0]}, #{text[1]}",
+        venue_booking_url: gig.at_css('a')['href']
+      }
+    end
+  end
 
 
   def Comedian.scrape_off_the_kerb(comedian_name)

@@ -109,7 +109,7 @@ class Venue < ApplicationRecord
 
             cell_sw_lat, cell_sw_lng = Projection.pixels_to_latlng i_sw_px, j_sw_px, zoom
 
-            cell_key = "#{cell_ne_lat} #{cell_ne_lng} #{cell_sw_lat} #{cell_sw_lng} #{zoom}"
+            cell_key = "(#{params[:comedians]}), (#{params[:start_date]}), (#{params[:end_date]}), (#{i_ne_px.to_i}, #{j_ne_px.to_i}), (#{i_sw_px.to_i}, #{j_sw_px.to_i})"
 
             cell_venues = Rails.cache.fetch(cell_key, expires_in: 1.day) do
               venues.find_all do |venue|
@@ -135,10 +135,9 @@ class Venue < ApplicationRecord
               # Normally we'd do gigs.count, but that does a separate 'select count(*)' query
               # for every single cell. Takes ages. With gigs.length, we can execute everything
               # in Venue.filter in just four queries.
-              # And! Let's randomise each lat/lng by +/-.075 degrees, to make things less sterile.
               markers[:groups] << {
-                latitude:  cell_centre_lat + (SecureRandom.random_number * 0.15)-0.075,
-                longitude: cell_centre_lng + (SecureRandom.random_number * 0.15)-0.075,
+                latitude:  cell_centre_lat,
+                longitude: cell_centre_lng,
                 type:      'group',
                 ids:       cell_venues.map{|v| v[:id] },
                 gig_count: cell_venues.map{|v| v[:gigs].length }.sum 
@@ -154,12 +153,8 @@ class Venue < ApplicationRecord
         markers
       }
 
-      # For caching purposes. They've already been jinked to the nearest cell boundary, see.
-      ne_lat, ne_lng = Projection.pixels_to_latlng ne_x, ne_y, zoom
-      sw_lat, sw_lng = Projection.pixels_to_latlng sw_x, sw_y, zoom
-
       before_call = Time.now.to_f
-      total_key = "#{ne_lat} #{ne_lng} #{sw_lat} #{sw_lng} #{zoom}"
+      total_key = "(#{params[:comedians]}), (#{params[:start_date]}), (#{params[:end_date]}), (#{ne_x.to_i}, #{ne_y.to_i}), (#{sw_x.to_i}, #{sw_y.to_i})"
       ap "total key: #{total_key}"
 
       markers = Rails.cache.fetch(total_key, expires_in: 1.day) do
