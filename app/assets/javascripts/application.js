@@ -31,7 +31,6 @@
 
 // My shite
 
-//= require components/react/credits
 //= require components/react/faqs
 //= require components/react/venue-info
 //= require components/react/search-form
@@ -39,6 +38,7 @@
 //= require components/react/banner
 //= require components/react/overlay
 //= require components/react/laughs
+//= require components/react/notify
 
 //= require components/backbone-components
 

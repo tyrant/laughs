@@ -15,14 +15,11 @@ class VenueInfo extends React.Component {
 
 
   getGigs() {
-
-    const gigs = this.props
+    return this.props
       .currentVenue
       .gigs()
       .filteredByFormValues(this.props.gigFilters)
       .sortedByTime();
-
-    return gigs;
   }
 
   render() {
@@ -32,9 +29,20 @@ class VenueInfo extends React.Component {
       return (
         <div className="panel panel-default">
           <div className="panel-heading">
-            <h4 className="panel-title">
-              Gigs at {venue.get('name')}
-            </h4>
+            <h3 className="panel-title">
+              {venue.get('name')}
+            </h3>
+            <label htmlFor="all_gigs">
+              <input 
+                type="radio" 
+                id="all_gigs" 
+                name="gig_filter" 
+                value="a" 
+                onChange={this.handleGigFilterChange} 
+                checked={this.props.gigFilters.gigFilter == 'a'}
+                />
+              All gigs
+            </label>
             <label htmlFor="searched_gigs">
               <input 
                 type="radio" 
@@ -46,17 +54,7 @@ class VenueInfo extends React.Component {
                 />
               Matching your search
             </label>
-            <label htmlFor="all_gigs">
-              <input 
-                type="radio" 
-                id="all_gigs" 
-                name="gig_filter" 
-                value="a" 
-                onChange={this.handleGigFilterChange} 
-                checked={this.props.gigFilters.gigFilter == 'a'}
-                />
-              All
-            </label>
+
           </div>
           <div className="panel-body">
             <ul>
@@ -78,7 +76,7 @@ class VenueInfo extends React.Component {
         <div className="panel panel-default">
           <div className="panel-heading">
             <h4 className="panel-title">
-              Click on a venue marker to display its gig list here.
+              Click a venue marker to show its gigs here.
             </h4>
           </div>
         </div>

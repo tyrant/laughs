@@ -64,7 +64,7 @@ class Venue < ApplicationRecord
       venues = venues.inside(params[:inside][:ne_lat], params[:inside][:ne_lng], params[:inside][:sw_lat], params[:inside][:sw_lng])
       after_cell = Time.now.to_f
 
-      cell_pixel_width = 70
+      cell_pixel_width = 60
       zoom = params[:zoom].to_i
       
       ne_x, ne_y = Projection.latlng_to_pixels params[:inside][:ne_lat], params[:inside][:ne_lng], params[:zoom]

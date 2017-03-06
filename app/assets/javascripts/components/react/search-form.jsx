@@ -11,7 +11,7 @@ class SearchForm extends React.Component {
 
     // Fire up the select2 box.
     $('#comedians').select2({
-      placeholder: 'Click or type to find gigs performed by...',
+      placeholder: "Find your favourite comics! Click or type here.",
       templateResult: (comic) => {
         if (comic.element) {
           return $('<span><img width="100" height="100" src="' + comic.element.attributes['data-src'].nodeValue + '">&nbsp;&nbsp;' + comic.text + '</span>');
@@ -24,13 +24,14 @@ class SearchForm extends React.Component {
       }
     });
 
+    // If the finest date granularity we have is months, it makes server caching so much easier.
     $('#start_date').datetimepicker({
-      format:      'DD MMM YYYY',
+      format:      'MMMM YYYY',
       defaultDate: this.props.startDate*1000,
     });
 
     $('#end_date').datetimepicker({ 
-      format:      'DD MMM YYYY',
+      format:      'MMMM YYYY',
       defaultDate: this.props.endDate*1000,
     });
 
@@ -40,25 +41,16 @@ class SearchForm extends React.Component {
     $('#comedians').on('change', () => { 
       this.handleSearchFormChange(); 
     });
-  }
 
-
-  // Keeping the comedian search <ul> at the right height is
-  // too dynamic and fiddly to implement with CSS alone. 
-  // We want the comedian selection list to halt 10px above the page bottom no matter what.
-  componentDidUpdate() {
+    // Keeping the comedian search <ul> at the right height is
+    // too dynamic and fiddly to implement with CSS alone. 
+    // We want the comedian selection list to halt 10px above the page bottom no matter what.
     $('#comedians').on('select2:open', (e) => { 
-
-      let comedianSelectBottom = parseInt($('#comedians').css('top')) + parseInt($('.select2-container').css('height'));
+      let comedianSelectBottom = 52 + parseInt($('.select2-container').css('height'));
       $('.select2-results__options').css('max-height', 'calc(100vh - ' + (comedianSelectBottom + 65) + 'px)');
     });
   }
 
-
-
-// .select2-container--default
-//   .select2-results > .select2-results__options 
-//     max-height: calc(100vh - 190px) !important
 
   // Bit of munging. Change [[key, value], ...] to { key: value, ... }
   handleSearchFormChange() {
@@ -84,23 +76,11 @@ class SearchForm extends React.Component {
       comedians: comedians,
     };
 
-    // Quick preprocessing: for both dates, turn 27 Jan 2017 into 2017-01-27.
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
-      'Sep', 'Oct', 'Nov', 'Dec'];
+    // Timestamping date strings like "April 2019" returns a timestamp at the
+    // start of the month. Let's bump it up to the month's end, and be inclusive.
+    // And Safari chokes on moment('March 2018'), so add a 1 to the start.
+    betterValues.endDate = moment('1 ' + betterValues.endDate).endOf('month').format('MMMM YYYY');
 
-    const start = betterValues.startDate.split(' ');
-    startMonth = _(months).indexOf(start[1]) + 1;
-    startMonth = startMonth.toString().length == 1 ? '0' + startMonth : startMonth; // My kingdom for a padStart()
-    betterStart = start[2] + '-' + startMonth + '-' + start[0];
-
-    betterValues.startDate = betterStart;
-
-    const end = betterValues.endDate.split(' ');
-    endMonth = _(months).indexOf(end[1]) + 1;
-    endMonth = endMonth.toString().length == 1 ? '0' + endMonth : endMonth; 
-    betterEnd = end[2] + '-' + endMonth + '-' + end[0];
-    betterValues.endDate = betterEnd;
-    
     this.props.handleSearchFormChange(betterValues);
   }
 
@@ -128,7 +108,7 @@ class SearchForm extends React.Component {
           </select>
         </div>
 
-        <div className="row">
+        <div className="row form-group date-filters">
           <div className="col-xs-6 start-container">
             <div className="form-group">
               <div className="input-group date" id="start_date">

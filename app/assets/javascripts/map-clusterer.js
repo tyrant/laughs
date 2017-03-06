@@ -1072,7 +1072,12 @@ ClusterIcon.prototype.triggerClusterClick = function() {
     // });
     // this.map_.setZoom(currentZoom + 2);
 
-    // I've changed my mind again. Don't do shit.
+    // I've changed my mind again. Don't do shit. Turns out whatever
+    // frickin' witchcraft this library does (and I'm being infantile 
+    // there, I know) fires off a ton of server caching events, and
+    // it takes the best part of a minute to render the marker response.
+    // Instead, just have a mouseover title, as depicted in 
+    // ClusterIcon.onAdd() below.
   }
 };
 
@@ -1087,6 +1092,7 @@ ClusterIcon.prototype.onAdd = function() {
     var pos = this.getPosFromLatLng_(this.center_);
     this.div_.style.cssText = this.createCss(pos);
     this.div_.innerHTML = this.sums_.text;
+    this.div_.title = 'At this zoom level, the ' + this.sums_.text + ' venues here are too snuggly to render as markers without some major overlapping. It\'s like sex tetris in there. Double-click to zoom in.';
   }
 
   var panes = this.getPanes();

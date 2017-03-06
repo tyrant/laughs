@@ -18,6 +18,7 @@ class Laughs extends React.Component {
     this.handleMarkerClick = this.handleMarkerClick.bind(this);
     this.handleTabChange = this.handleTabChange.bind(this);
     this.handleGigFilterChange = this.handleGigFilterChange.bind(this);
+    this.handleCreateMap = this.handleCreateMap.bind(this);
 
     this.getUrlData = this.getUrlData.bind(this);
     this.setUrlData = this.setUrlData.bind(this);
@@ -178,6 +179,7 @@ class Laughs extends React.Component {
   // The user's changed the search form values. Hit up the server for whatever new 
   // venues we need to add to our cache, then update the state with comedians, start
   // and end dates.
+  // Add '1' to each date string to help out Safari, which doesn't like MMMM YYYY.
   handleSearchFormChange(values) {
 
     const selectedComedians = this.state.allComedians.filter((c) => {
@@ -186,8 +188,8 @@ class Laughs extends React.Component {
 
     this.setState({
       selectedComedians: new ComedianCollection(selectedComedians),
-      startDate:         moment(values.startDate).unix(),
-      endDate:           moment(values.endDate).unix(),
+      startDate:         moment('1 ' + values.startDate).unix(),
+      endDate:           moment('1 ' + values.endDate).unix(),
     });
 
     this.fetchMoreVenues();
@@ -232,6 +234,12 @@ class Laughs extends React.Component {
     });
   }
 
+
+  handleCreateMap(map) {
+    this.setState({
+      map: map
+    });
+  }
 
   // Only ever called on page load. We load what we can from the URL, and set the rest
   // from our defaults.
@@ -377,6 +385,7 @@ class Laughs extends React.Component {
             venues={venueDeepCopy}
             handleMapChange={this.handleMapChange}
             handleMarkerClick={this.handleMarkerClick}
+            handleCreateMap={this.handleCreateMap}
           />
 
           <Overlay
@@ -389,6 +398,7 @@ class Laughs extends React.Component {
             handleSearchFormChange={this.handleSearchFormChange}
             tab={this.state.tab}
             handleTabChange={this.handleTabChange}
+            map={this.state.map}
 
             gigFilters={gigFilters}
             handleGigFilterChange={this.handleGigFilterChange}

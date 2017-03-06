@@ -90,6 +90,8 @@ gem 'rb-readline' # Without this, postgres 9.62 is incompatible with rails c
 gem 'timezone'
 gem 'delayed_job_active_record'
 gem 'daemons'
+gem 'devise'
+gem 'omniauth-facebook'
 
 # Ubuntu server: don't forget http://stackoverflow.com/questions/34708211/getting-rgeo-geos-support-to-work-in-a-rails-app-deployed-to-dokku
 gem 'activerecord-postgis-adapter'

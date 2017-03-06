@@ -21,11 +21,10 @@ class Banner extends React.Component {
         </a>
         {this.props.blurbData.ajaxState == 'loading' ?
           <span id="blurb">
-            Loading venues and gigs... <i className="fa fa-refresh fa-spin"></i>
+            Just a sec <i className="fa fa-refresh fa-spin"></i>
           </span>
           :
           <span id="blurb">
-            Showing&nbsp;
             {this.props.blurbData.venues}&nbsp;
             {this.props.blurbData.venues == 1 ? 'venue' : 'venues'}
             ,&nbsp;

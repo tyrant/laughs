@@ -11,7 +11,6 @@ class Map extends React.Component {
     this.addNewVenueGroupsToMap = this.addNewVenueGroupsToMap.bind(this);
 
     this.getIdsFromVenuesAndGroups = this.getIdsFromVenuesAndGroups.bind(this);
-    this.arrayDifference = this.arrayDifference.bind(this);
   }
 
 
@@ -19,15 +18,17 @@ class Map extends React.Component {
 
     // Fire up the map.
     this.map = new google.maps.Map(this.refs.map, {
-      center:    new google.maps.LatLng(this.props.lat, this.props.lng),
+      center:    new google.maps.LatLng(parseFloat(this.props.lat), parseFloat(this.props.lng)),
       zoom:      this.props.zoom,
       mapTypeId: 'terrain'
     });
 
+    this.props.handleCreateMap(this.map);
+
     // Fire up the clusterer.
     this.clusterer = new MarkerClusterer(this.map, [], {
       imagePath: '/m',
-      gridSize:  45,
+      gridSize:  40,
     });
 
     // Fire up a few event listeners.
@@ -59,20 +60,8 @@ class Map extends React.Component {
   } 
 
 
-  // Receive two arrays of arrays of integers. Remove all integer arrays
-  // from the first that are also in the second, and return the remainder.
-  arrayDifference(array1, array2) {
-
-    // Filter array1's entries by whether a1 doesn't have a member of array2 equal to it.
-    return _(array1).filter((a1) => {
-
-      // Not a single member of array2 equals a1? Great. Filter passed.
-      return !_(array2).any(a2 => _(a1).isEqual(a2));
-    });
-  }
-
-
-  // We only want to update the map if the venue list has changed.
+  // We want to update the map if the venue list has changed, or if the user
+  // has entered a KML search string.
   shouldComponentUpdate(nextProps, nextState) {
 
     oldIds = this.getIdsFromVenuesAndGroups(this.props.venues);
@@ -85,9 +74,11 @@ class Map extends React.Component {
   // Compare prevProps.venues to this.props.venues, see which are newly added,
   // which have gone; add the new ones to the map, and delete the old markers.
   componentDidUpdate(prevProps, prevState) {
-
     newIds = this.getIdsFromVenuesAndGroups(this.props.venues);
 
+    // Fuckit, I had some fiddly functions removing only the ones deleted,
+    // but ugh, bugs and overly complex. I'll take the tradeoff of redrawing
+    // the lot on every map change.
     this.removeAllMarkers();
 
     this.addNewVenuesToMap(newIds.venues);
@@ -104,11 +95,15 @@ class Map extends React.Component {
         return venue.id == venueId; 
       });
 
+      let gigCount = venue.gigs().length.toString();
+      let gig_sp = gigCount == 1 ? 'gig' : 'gigs' // singular/plural
+      let pronoun_sp = gigCount == 1 ? 'it': 'them';
+
       let marker = new google.maps.Marker({
         position: new google.maps.LatLng(venue.get('latitude'), venue.get('longitude')),
-        title:    venue.get('name') + ', ' + venue.get('readable_address'),
+        title:    gigCount + ' ' + gig_sp + ' at ' + venue.get('name') + ' - click to view ' + pronoun_sp + '!',
         map:      this.map,
-        label:    venue.gigs().length.toString(),
+        label:    gigCount.toString(),
       });
 
       marker.addListener('click', (e) => {
@@ -133,7 +128,7 @@ class Map extends React.Component {
     let addedVenueGroupMarkers = [];
 
     _(venueIdArrays).each((venueIds) => {
-      _(venueIds).each((venueId) => {
+       _(venueIds).each((venueId) => {
 
         let venueGroup = this.props.venues.groups.find((group) => {
           return _(group.ids).contains(venueId);

@@ -5,6 +5,32 @@ function FAQs() {
     <div className="panel-group" id="faq_accordion" role="tablist" aria-multiselectable="true">
 
       <div className="panel panel-default">
+        <div className="panel-heading" role="tab" id="headingZero">
+          <h4 className="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#faq_accordion" href="#collapseZero" aria-expanded="true" aria-controls="collapseZero">
+              This website map thingy looks great, but ... er, what's it actually about?
+            </a>
+          </h4>
+        </div>
+        <div id="collapseZero" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingZero">
+          <div className="panel-body">
+            <p>
+              Good question! So I'm a big fan of standup comedy. I live in Wellington, New Zealand. I might walk through town and spy a poster of, say, Jimmy Carr, or Eddie Izzard, or another big international act. Hey great, they're doing a gig!
+            </p>
+            <p>
+              Then I walk closer ... and turns out they came and went three months ago. Damn and blast and Gaddafi's loathsome undies.
+            </p>
+            <p>
+              So I figured ... hang on, these comics all have websites. Websites with Upcoming Gigs pages. Full of gigs, and ticket links. Let's help them out! Let's write an app that grabs that info and displays it on a map.
+            </p>
+            <p>
+              This is it. Enjoy!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="panel panel-default">
         <div className="panel-heading" role="tab" id="headingOne">
           <h4 className="panel-title">
             <a role="button" data-toggle="collapse" data-parent="#faq_accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -48,7 +74,7 @@ function FAQs() {
         <div className="panel-heading" role="tab" id="headingTwo">
           <h4 className="panel-title">
             <a role="button" data-toggle="collapse" data-parent="#faq_accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-              This comedy-search app thingy seems kinda cool. Can I install it on my own website?
+              Your app seems kinda cool. Can I install it on my own website?
             </a>
           </h4>
         </div>
@@ -121,32 +147,139 @@ function FAQs() {
         <div className="panel-heading" role="tab" id="headingFive">
           <h4 className="panel-title">
             <a role="button" data-toggle="collapse" data-parent="#faq_accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-              What are all these map icons?
+              What do all these map icons mean?
             </a>
           </h4>
         </div>
-        <div id="collapseFive" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+        <div id="collapseFive" className="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
           <div className="panel-body">
             <p>
-              <img src="/map-marker.png" />A single venue. Its number denotes how many gigs we've got on record for it.
+              <img src="/map-marker.png" />One of these babies denotes a single venue. Its number denotes how many gigs for it we've got on record.
             </p>
             <p>
-              Otherwize, zoom in on these to see the densely clustered venues below:
+              Otherwise, each of the icons below denotes any number of venues too closely packed to properly show at this zoom level. Double-click to zoom in closer.
             </p>
             <p>
-              <img src="/m1.png" />1-10 venues
+              <img src="/m1.png" />1-9 venues
             </p>
             <p>
-              <img src="/m2.png" />10-100 venues
+              <img src="/m2.png" />10-99 venues
             </p>
             <p>
-              <img src="/m3.png" />100-1000 venues
+              <img src="/m3.png" />100-999 venues
             </p>
             <p>
-              <img src="/m4.png" />1000-10000 venues
+              <img src="/m4.png" />1000-9999 venues
             </p>
             <p>
-              <img src="/m5.png" />10000-100000 venues
+              <img src="/m5.png" />10000+ venues
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="panel panel-default">
+        <div className="panel-heading" role="tab" id="heading6">
+          <h4 className="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#faq_accordion" href="#collapse6" aria-expanded="false" aria-controls="collapse6">
+              Where have you got your venue/gig data from?
+            </a>
+          </h4>
+        </div>
+        <div id="collapse6" className="panel-collapse collapse" role="tabpanel" aria-labelledby="heading6">
+          <div className="panel-body">
+            <p>
+              Many websites have contributed! Here are a few:
+            </p>
+            <p>
+              <a href="https://www.jimmycarr.com/live/?show=2017-uk-tour-dates">https://www.jimmycarr.com/live/?show=2017-uk-tour-dates</a>
+            </p>
+            <p>
+              <a href="http://www.eddieizzard.com/shows">http://www.eddieizzard.com/shows</a>
+            </p>
+            <p>
+              <a href="http://www.daraobriain.com/dates/">http://www.daraobriain.com/dates/</a>
+            </p>
+            <p>
+              <a href="http://edbyrne.com/live-dates/">http://edbyrne.com/live-dates/</a>
+            </p>
+            <p>
+              <a href="http://www.livenation.co.uk/artist/micky-flanagan-tickets">http://www.livenation.co.uk/artist/micky-flanagan-tickets</a>
+            </p>
+            <p>
+              <a href="http://billburr.com/events/">http://billburr.com/events/</a>
+            </p>
+            <p>
+              <a href="http://jimjefferies.com/events">http://jimjefferies.com/events</a>
+            </p>
+            <p>
+              <a href="http://www.rhysdarby.com/gigs/">http://www.rhysdarby.com/gigs/</a>
+            </p>
+            <p>
+              <a href="http://www.rossnoble.co.uk/tour/">http://www.rossnoble.co.uk/tour/</a>
+            </p>
+            <p>
+              <a href="https://www.ents24.com/uk/tour-dates/sean-lock">https://www.ents24.com/uk/tour-dates/sean-lock</a>
+            </p>
+            <p>
+              <a href="http://gregdavies.co.uk/">http://gregdavies.co.uk/</a>
+            </p>
+            <p>
+              <a href="https://www.frankieboyle.com/">https://www.frankieboyle.com/</a>
+            </p>
+            <p>
+              <a href="http://jonrichardsoncomedy.com/gigs/">http://jonrichardsoncomedy.com/gigs/</a>
+            </p>
+            <p>
+              <a href="http://www.markwatsonthecomedian.com/category/live-shows/">http://www.markwatsonthecomedian.com/category/live-shows/</a>
+            </p>
+            <p>
+              <a href="http://billbailey.co.uk/tour/">http://billbailey.co.uk/tour/</a>
+            </p>
+            <p>
+              <a href="http://www.russell-howard.co.uk/">http://www.russell-howard.co.uk/</a>
+            </p>
+            <p>
+              <a href="http://www.reginalddhunter.com/uk-tour-2017/">http://www.reginalddhunter.com/uk-tour-2017/</a>
+            </p>
+            <p>
+              <a href="http://henningwehn.de/tour/">http://henningwehn.de/tour/</a>
+            </p>
+            <p>
+              <a href="https://louisck.net/tour-dates">https://louisck.net/tour-dates</a>
+            </p>
+            <p>
+              <a href="http://www.stereoboard.com/peter-kay-tickets">http://www.stereoboard.com/peter-kay-tickets</a>
+            </p>
+            <p>
+              <a href="http://www.omidnoagenda.com/omiddjalilievent.html">http://www.omidnoagenda.com/omiddjalilievent.html</a>
+            </p>
+            <p>
+              <a href="http://www.stewartlee.co.uk/live-dates/">http://www.stewartlee.co.uk/live-dates/</a>
+            </p>
+            <p>
+              <a href="http://www.miltonjones.com/live">http://www.miltonjones.com/live</a>
+            </p>
+            <p>
+              <a href="http://andyzaltzman.co.uk/shows/">http://andyzaltzman.co.uk/shows/</a>
+            </p>
+            <p>
+              <a href="http://russellbrand.seetickets.com/tour/russell-brand/list/1/200">http://russellbrand.seetickets.com/tour/russell-brand/list/1/200</a>
+            </p>
+            <p>
+              <a href="http://www.tomindeed.com/shows/">http://www.tomindeed.com/shows/</a>
+            </p>
+            <p>
+              <a href="http://billyconnolly.com/tour">http://billyconnolly.com/tour</a>
+            </p>
+            <p>
+              <a href="https://www.jackwhitehall.com/">https://www.jackwhitehall.com/</a>
+            </p>
+            <p>
+              <a href="http://offthekerb.co.uk/on-tour/">http://offthekerb.co.uk/on-tour/</a>
+            </p>
+            <p>
+              An extra-big thanks to <a href="http://nominatim.openstreetmap.org/">http://nominatim.openstreetmap.org/</a>, who have been kind enough to provide a public API to display place boundaries.
             </p>
           </div>
         </div>

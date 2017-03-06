@@ -27,4 +27,11 @@ module GP
       spots.first
     end
   end
+
+
+  # For REASONS UNKNOWN, #first_plausible_spot doesn't return address details - 
+  # you have to hit @client.spot to get those.
+  def GP.spot(place_id)
+    @client.spot(place_id)
+  end
 end

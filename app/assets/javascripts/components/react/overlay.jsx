@@ -18,17 +18,17 @@ class Overlay extends React.Component {
       <div id="overlay" className="container" style={{display: this.props.showOverlay ? 'block' : 'none'}}>
 
         <ul className="nav nav-tabs" role="tablist">
-          <li role="presentation" className={this.props.tab == 'credits' ? 'active' : ''}>
-            <a href="#credits" aria-controls="credits" role="tab" data-toggle="tab">Credits</a>
-          </li>
           <li role="presentation" className={this.props.tab == 'faq' ? 'active' : ''}>
             <a href="#faq" aria-controls="faq" role="tab" data-toggle="tab">FAQs</a>
           </li>
+          <li role="presentation" className={this.props.tab == 'email' ? 'active' : ''}>
+            <a href="#email" aria-controls="email" role="tab" data-toggle="tab">Notify</a>
+          </li>
           <li role="presentation" className={this.props.tab == 'gigs' ? 'active' : ''}>
-            <a href="#gigs" aria-controls="gigs" role="tab" data-toggle="tab">Gigs</a>
+            <a href="#gigs" aria-controls="gigs" role="tab" data-toggle="tab">Show</a>
           </li>
           <li role="presentation" className={this.props.tab == 'search' ? 'active' : ''}>
-            <a href="#search" aria-controls="search" role="tab" data-toggle="tab">Search</a>
+            <a href="#search" aria-controls="search" role="tab" data-toggle="tab">Find</a>
           </li>
         </ul>
 
@@ -52,12 +52,17 @@ class Overlay extends React.Component {
             />
           </div>
 
-          <div role="tabpanel" className={this.props.tab == 'faq' ? 'tab-pane active' : 'tab-pane'} id="faq">
-            <FAQs />
+          <div role="tabpanel" className={this.props.tab == 'email' ? 'tab-pane active' : 'tab-pane'} id="email">
+            <Notify 
+              handlePlaceSearchSubmit={this.props.handlePlaceSearchSubmit}
+              handleNotify={this.props.handleNotify}
+              geodata={this.props.geodata}
+              map={this.props.map}
+            />
           </div>
 
-          <div role="tabpanel" className={this.props.tab == 'credits' ? 'tab-pane active' : 'tab-pane'} id="credits">
-            <Credits />
+          <div role="tabpanel" className={this.props.tab == 'faq' ? 'tab-pane active' : 'tab-pane'} id="faq">
+            <FAQs />
           </div>
         </div>
       </div>
