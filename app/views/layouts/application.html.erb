@@ -11,9 +11,17 @@
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>  
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <script>
+      <% if user_signed_in? %>
+        window.user_id = <%= current_user.id %>;
+      <% end %>
+    </script>
   </head>
 
   <body>
+    <% if notice %><p class="notice"><%= notice %></p><% end %>
+    <% if alert %><p class="alert"><%= alert %></p><% end %>
+
     <%= yield %>
   </body>
 </html>

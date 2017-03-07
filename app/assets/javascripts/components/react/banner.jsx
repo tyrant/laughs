@@ -19,20 +19,11 @@ class Banner extends React.Component {
         <a id="home" className="btn btn-default" href="/">
           <i className="glyphicon glyphicon-home"></i>
         </a>
-        {this.props.blurbData.ajaxState == 'loading' ?
-          <span id="blurb">
-            Just a sec <i className="fa fa-refresh fa-spin"></i>
-          </span>
-          :
-          <span id="blurb">
-            {this.props.blurbData.venues}&nbsp;
-            {this.props.blurbData.venues == 1 ? 'venue' : 'venues'}
-            ,&nbsp;
-            {this.props.blurbData.gigs}&nbsp;
-            {this.props.blurbData.gigs == 1 ? 'gig' : 'gigs'}
-          </span>
-        }
+        <span id="blurb">
+          Find your favourite comics!
+        </span>
         <a id="toggle_overlay" className="btn btn-default" onClick={this.handleClick}>
+          Menu
           <span className="glyphicon glyphicon-list" aria-hidden="true"></span>
         </a>
       </div>

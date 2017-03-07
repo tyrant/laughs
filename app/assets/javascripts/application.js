@@ -39,6 +39,7 @@
 //= require components/react/overlay
 //= require components/react/laughs
 //= require components/react/notify
+//= require components/react/ticker
 
 //= require components/backbone-components
 

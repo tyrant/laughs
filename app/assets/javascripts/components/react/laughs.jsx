@@ -373,7 +373,6 @@ class Laughs extends React.Component {
 
         <Banner 
           handleOverlayToggleClick={this.handleOverlayToggleClick}
-          blurbData={blurbData}
         />
 
         <div id="everything_else">
@@ -406,6 +405,9 @@ class Laughs extends React.Component {
             currentVenue={this.state.currentVenue}
           />
 
+          <Ticker 
+            blurbData={blurbData}
+          />
         </div>
       </div>
     );

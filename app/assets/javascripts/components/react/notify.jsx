@@ -14,14 +14,6 @@ class Notify extends React.Component {
   componentDidUpdate() {
     if (this.props.map && !this.autocomplete) {
 
-      let marker = new google.maps.Marker({
-        map:         this.props.map,
-        anchorPoint: new google.maps.Point(0, 0),
-        icon:        '/blue-marker.png',
-        animation:   google.maps.Animation.DROP,
-      });
-      marker.setVisible(false);
-
       let input = document.getElementById('autocomplete');
       this.autocomplete = new google.maps.places.Autocomplete(input);
       this.autocomplete.bindTo('bounds', this.props.map);
@@ -32,8 +24,13 @@ class Notify extends React.Component {
         if (place.geometry) {
           let location = place.geometry.location;
           $('#place_id').val(place.place_id);
-          marker.setVisible(true);
-          marker.setPosition(location);
+
+          let marker = new google.maps.Marker({
+            map:       this.props.map,
+            position:  location,
+            icon:      '/blue-marker.png',
+            animation: google.maps.Animation.DROP,
+          });
 
           if (!this.props.map.getBounds().contains(location)) {
             this.props.map.setCenter(place.geometry.location);
