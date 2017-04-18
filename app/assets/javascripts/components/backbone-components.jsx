@@ -1,3 +1,19 @@
+var Alert = Supermodel.Model.extend({
+  urlRoot: '/alerts',
+  validate: function(attrs, options) {
+    if (!attrs.readable_address)
+      return "You'll need to select a city to get alerts for";
+    else
+      return undefined;
+  },
+
+
+});
+
+var ComedianAlert = Supermodel.Model.extend({
+  url: '/comedian_alerts',
+});
+
 var Comedian = Supermodel.Model.extend();
 
 var Spot = Supermodel.Model.extend();
@@ -23,6 +39,21 @@ var Gig = Supermodel.Model.extend({
 
 var Venue = Supermodel.Model.extend();
 
+
+var AlertCollection = Backbone.Collection.extend({
+
+  url: '/alerts',
+  model: function(attrs, options) {
+    return Alert.create(attrs, options);
+  }
+});
+
+var ComedianAlertCollection = Backbone.Collection.extend({
+
+  model: function(attrs, options) {
+    return ComedianAlert.create(attrs, options);
+  }
+});
 
 var ComedianCollection = Backbone.Collection.extend({
 
@@ -103,6 +134,26 @@ Comedian.has().many('spots', {
   inverse:    'comedian',
 });
 
+Comedian.has().many('comedian_alerts', {
+  collection: ComedianAlertCollection,
+  inverse:    'comedian',
+});
+
+ComedianAlert.has().one('comedian', {
+  model:   Comedian,
+  inverse: 'comedian_alerts'
+});
+
+ComedianAlert.has().one('alert', {
+  model:   Alert,
+  inverse: 'comedian_alerts'
+});
+
+Alert.has().many('comedian_alerts', {
+  collection: ComedianAlertCollection,
+  inverse:    'alert'
+});
+
 Spot.has().one('comedian', {
   model:   Comedian,
   inverse: 'spots'
@@ -127,3 +178,4 @@ Venue.has().many('gigs', {
   collection: GigCollection,
   inverse:    'venue',
 });
+

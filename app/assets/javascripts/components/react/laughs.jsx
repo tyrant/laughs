@@ -5,9 +5,11 @@ class Laughs extends React.Component {
     super();
 
     // Set up our functions' 'this' scopes.
+    this.initCsrfToken = this.initCsrfToken.bind(this);
+    this.initUser = this.initUser.bind(this);
+    this.initAlerts = this.initAlerts.bind(this);
     this.fetchMoreVenues = this.fetchMoreVenues.bind(this);
     this.comedians = this.comedians.bind(this);
-    //this.selectedVenuesAndGigs = this.selectedVenuesAndGigs.bind(this);
     this.gigFilters = this.gigFilters.bind(this);
     this.bounds = this.bounds.bind(this);
     this.blurbData = this.blurbData.bind(this);
@@ -19,23 +21,66 @@ class Laughs extends React.Component {
     this.handleTabChange = this.handleTabChange.bind(this);
     this.handleGigFilterChange = this.handleGigFilterChange.bind(this);
     this.handleCreateMap = this.handleCreateMap.bind(this);
+    this.handleCreateAlert = this.handleCreateAlert.bind(this);
+    this.handleDestroyAlert = this.handleDestroyAlert.bind(this);
 
     this.getUrlData = this.getUrlData.bind(this);
     this.setUrlData = this.setUrlData.bind(this);
     this.loadStateFromUrl = this.loadStateFromUrl.bind(this);
 
+    this.handleDeviseEventCallbacks = this.handleDeviseEventCallbacks.bind(this);
 
-    // And we're off! Set shit up.
+
+    // And we're off! Set shit up. Get our state:
     this.state = this.loadStateFromUrl();
 
     // When our <Map> finishes mounting, it squirts back its state, triggering
     // this.handleMapChange(), calling this.fetchMoreVenues(). 
+
+    this.initCsrfToken();
+  }
+
+
+  componentDidMount() {
+    this.initUser();
+    this.initAlerts();
   }
 
 
   // Whenever we call setState, we want to update the URL with the new goodies.
   componentDidUpdate() {
     this.setUrlData();
+  }
+
+
+  // Whenever we fire off an Ajax request, especially concerning auth, we want to
+  // update the CSRF token.
+  initCsrfToken() {
+    $(document).ajaxComplete(function(event, xhr, settings) {
+      var csrf_param = xhr.getResponseHeader('X-CSRF-Param');
+      var csrf_token = xhr.getResponseHeader('X-CSRF-Token');
+
+      if (csrf_param) {
+        $('meta[name="csrf-param"]').attr('content', csrf_param);
+      }
+      if (csrf_token) {
+        $('meta[name="csrf-token"]').attr('content', csrf_token);
+      }
+    });
+  }
+
+
+  initUser() {
+    this.setState({
+      user: window.user
+    });
+  }
+
+
+  initAlerts() {
+    this.setState({
+      alerts: new AlertCollection(window.alerts)
+    });
   }
 
 
@@ -241,6 +286,52 @@ class Laughs extends React.Component {
     });
   }
 
+
+  // Receive new alert data. If data.city_country matches any of the user's existing alerts,
+  // don't create it.
+  handleCreateAlert(data) {
+
+    const alerts = this.state.alerts;
+
+    // Yay for collection-wide validation. Looks like Backbone models don't offer this
+    // without major replumbing.
+    const existing_city_country = alerts.any((alert) => { 
+      return alert.get('city_country') == data.city_country;
+    });
+
+    if (existing_city_country) {
+      alert('You already have an alert set up for this city.');
+
+    } else {
+      const newAlert = new Alert(data);
+
+      if (!newAlert.isValid()) {
+        alert(newAlert.validationError);
+
+      } else {
+        alerts.add(newAlert);
+        newAlert.save();
+        this.setState({
+          alerts: alerts,
+        });
+
+      }
+    }
+  }
+
+
+  handleDestroyAlert(id) {
+    let alerts = this.state.alerts;
+    let currentAlert = alerts.get(id);
+    console.log(id, currentAlert);
+    currentAlert.destroy();
+
+    this.setState({
+      alerts: alerts,
+    });
+  }
+
+
   // Only ever called on page load. We load what we can from the URL, and set the rest
   // from our defaults.
   loadStateFromUrl() {
@@ -357,11 +448,47 @@ class Laughs extends React.Component {
   }
 
 
+  // 'Event' can be the usual lot, 'logged_in', 'signed_up', 'logged_out'. Past tense;
+  // called by ajax responses.
+  handleDeviseEventCallbacks(event, data) {
+
+    // Logged in? Set user data and nab their existing alert list.
+    if (event == 'logged_in') {
+      this.setState({
+        user: data,
+      });
+      $.get('/alerts').done((response) => {
+        this.setState({
+          alerts: new AlertCollection(response),
+        });
+
+      }).error((response) => {
+        console.log('A bad happened!', response);
+      });
+
+    // signed up? Just set user data.
+    } else if (event == 'signed_up') {
+      this.setState({
+        user: data,
+      });
+
+    // Logged out? Unset user data.
+    } else if (event == 'logged_out') {
+      this.setState({
+        user:   null,
+        alerts: new AlertCollection(),
+      });
+
+    }
+  }
+
+
   // Default: we render the map and overlay. 
   // If we've got a venue, render its view instead.
   render() {
     const gigFilters = this.gigFilters();
     const blurbData = this.blurbData();
+    const alerts = this.state.alerts || new AlertCollection();
 
     let venueDeepCopy = {
       venues: new VenueCollection(this.state.allVenues.venues.models),
@@ -373,6 +500,8 @@ class Laughs extends React.Component {
 
         <Banner 
           handleOverlayToggleClick={this.handleOverlayToggleClick}
+          handleDeviseEventCallbacks={this.handleDeviseEventCallbacks}
+          user={this.state.user}
         />
 
         <div id="everything_else">
@@ -401,8 +530,12 @@ class Laughs extends React.Component {
 
             gigFilters={gigFilters}
             handleGigFilterChange={this.handleGigFilterChange}
-
             currentVenue={this.state.currentVenue}
+
+            user={this.state.user}
+            alerts={alerts}
+            handleCreateAlert={this.handleCreateAlert}
+            handleDestroyAlert={this.handleDestroyAlert}
           />
 
           <Ticker 

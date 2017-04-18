@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script>
       <% if user_signed_in? %>
-        window.user_id = <%= current_user.id %>;
+        window.user = <%= raw current_user.to_json %>;
       <% end %>
     </script>
   </head>

@@ -59,9 +59,11 @@ class SearchForm extends React.Component {
     const startDate = _(values).find((v) => {
       return v.name == 'start_date';
     }).value;
+
     const endDate = _(values).find((v) => {
       return v.name == 'end_date';
     }).value;
+    
     const comedians = _(values).chain().filter((v) => {
       return v.name == 'comedians[]';
     }).map((v) => {

@@ -58,6 +58,11 @@ class Overlay extends React.Component {
               handleNotify={this.props.handleNotify}
               geodata={this.props.geodata}
               map={this.props.map}
+              user={this.props.user}
+              alerts={this.props.alerts}
+              handleCreateAlert={this.props.handleCreateAlert}
+              handleDestroyAlert={this.props.handleDestroyAlert}
+              allComedians={this.props.allComedians} 
             />
           </div>
 

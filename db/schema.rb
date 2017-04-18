@@ -10,11 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170306192539) do
+ActiveRecord::Schema.define(version: 20170412050808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "postgis"
+
+  create_table "alerts", force: :cascade do |t|
+    t.integer "user_id"
+    t.string  "google_place_id"
+    t.string  "warning"
+    t.string  "city_country"
+    t.string  "readable_address"
+    t.index ["user_id"], name: "index_alerts_on_user_id", using: :btree
+  end
+
+  create_table "comedian_alerts", force: :cascade do |t|
+    t.integer  "comedian_id"
+    t.integer  "alert_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.index ["alert_id"], name: "index_comedian_alerts_on_alert_id", using: :btree
+    t.index ["comedian_id"], name: "index_comedian_alerts_on_comedian_id", using: :btree
+  end
 
   create_table "comedians", force: :cascade do |t|
     t.string   "name"

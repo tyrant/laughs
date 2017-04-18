@@ -1,4 +1,4 @@
-$banner-height: 40px
+$banner-height: 37px
 $dark-grey: #444
 $light-grey: #eee
 
@@ -16,26 +16,29 @@ body
 
   .btn.btn-default 
     color: $dark-grey
-    font-size: 12pt
+    font-size: 10pt
     padding: 2px 5px
-    position: absolute
-    top: 6px
+    margin: 6px 6px 6px 0
   
   #home 
-    left: 6px
+    float: left
+    margin-left: 6px
   
   #blurb 
     line-height: $banner-height
   
   #toggle_overlay 
-    right: 6px
+    float: right
+
+  #auth
+    float: right
 
 #everything_else 
-  height: calc(100% - 40px)
+  height: calc(100% - 37px)
 
   #map 
     width: 100%
-    height: calc(100% - 40px) 
+    height: calc(100% - 37px) 
     position: absolute
   
   #overlay 
@@ -48,12 +51,12 @@ body
     @media (min-width: 400px) 
       width: 330px
       border-radius: 0 0 0 10px
-      max-height: calc(100% - 40px)
+      max-height: calc(100% - 37px)
     
     @media (max-width: 400px) 
       width: 100% 
       border-radius: 0
-      max-height: calc(65% - 40px)
+      max-height: calc(65% - 37px)
     
 #gigs 
 

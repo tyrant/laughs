@@ -6,6 +6,8 @@ class Comedian < ApplicationRecord
   has_many :spots
   has_many :gigs, through: :spots
   has_many :venues, through: :gigs
+  has_many :comedian_alerts
+  has_many :comedians, through: :comedian_alerts
 
   has_attached_file :mugshot, styles: { thumb: "100x100#" }
   validates_attachment :mugshot, presence: true
@@ -70,7 +72,7 @@ class Comedian < ApplicationRecord
       # Grab the venue's name/city string, then plug that into the Google Places API later,
       # to get things like its Place ID, Google's unique identifier for every location
       # on Earth. Useful!
-      venue_deets = html_gig.at_css('.city-venue').text.strip
+      venue_deets = html_gig.at_css('.city-venue').text.squish
 
       # Grab the booking and/or Ticketmaster URLs.
       # What's this Xpath syntax? Check out http://stackoverflow.com/questions/3655549.

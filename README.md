@@ -4,6 +4,20 @@ So this little baby runs a web script for the websites of various comedians - Ji
 
 You can see it in action at sciencethisbitchup.com.
 
+## Starting services
+
+### Memcached
+
+On Development: `memcached`
+
+### Start the database on OSX/MacOS
+
+The page http://stackoverflow.com/questions/7975556/how-to-start-postgresql-server-on-mac-os-x is a godsend, check that out.
+
+Step One: `pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start`
+
+
+
 ## Setting up a Production server
 
 * Hooking into this repo
